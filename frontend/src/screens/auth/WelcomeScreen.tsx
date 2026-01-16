@@ -1,29 +1,57 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
 export const WelcomeScreen = ({ navigation }: any) => {
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
-      <Text style={styles.title}>❤️ Lovele</Text>
-      <Text style={styles.subtitle}>Conecte-se com quem você ama</Text>
-      
-      <View style={styles.buttons}>
-        <TouchableOpacity 
-          style={styles.buttonPrimary}
-          onPress={() => navigation.navigate('Login')}
-        >
-          <Text style={styles.buttonTextPrimary}>Entrar</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity 
-          style={styles.buttonSecondary}
-          onPress={() => navigation.navigate('Register')}
-        >
-          <Text style={styles.buttonTextSecondary}>Criar Conta</Text>
-        </TouchableOpacity>
-      </View>
+
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.header}>
+          <Text style={styles.logo}>❤️</Text>
+          <Text style={styles.title}>Lovele</Text>
+          <Text style={styles.subtitle}>Conecte-se com quem você ama</Text>
+
+          <View style={styles.features}>
+            <View style={styles.featureItem}>
+              <Text style={styles.featureEmoji}>💬</Text>
+              <Text style={styles.featureText}>Mensagens em tempo real</Text>
+            </View>
+
+            <View style={styles.featureItem}>
+              <Text style={styles.featureEmoji}>📸</Text>
+              <Text style={styles.featureText}>Compartilhe momentos</Text>
+            </View>
+
+            <View style={styles.featureItem}>
+              <Text style={styles.featureEmoji}>💕</Text>
+              <Text style={styles.featureText}>Conecte-se com amigos</Text>
+            </View>
+          </View>
+        </View>
+
+        <View style={styles.buttons}>
+          <TouchableOpacity
+            style={styles.buttonPrimary}
+            onPress={() => navigation.navigate('Login')}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.buttonTextPrimary}>Entrar</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.buttonSecondary}
+            onPress={() => navigation.navigate('Register')}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.buttonTextSecondary}>Criar Conta</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     </View>
   );
 };
