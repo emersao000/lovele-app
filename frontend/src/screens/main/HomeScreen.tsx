@@ -1,458 +1,329 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Dimensions, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, Dimensions, FlatList } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useAuth } from '../../hooks/useAuth';
-import Svg, { Path, Circle, Defs, LinearGradient as SvgGradient, Stop } from 'react-native-svg';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import Svg, { Defs, LinearGradient as SvgGradient, Stop, Rect } from 'react-native-svg';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
-// Ícone Home
-const HomeIcon = ({ active = false }) => (
-  <Svg width="26" height="26" viewBox="0 0 24 24" fill="none">
-    <Path
-      d="M3 12L5 10M5 10L12 3L19 10M5 10V20C5 20.5523 5.44772 21 6 21H9M19 10L21 12M19 10V20C19 20.5523 18.5523 21 18 21H15M9 21C9.55228 21 10 20.5523 10 20V16C10 15.4477 10.4477 15 11 15H13C13.5523 15 14 15.4477 14 16V20C14 20.5523 14.4477 21 15 21M9 21H15"
-      stroke={active ? "#FF6B9D" : "#8E8E93"}
-      strokeWidth="2"
-      strokeLinecap="round"
-    />
-  </Svg>
-);
-
-// Ícone Chat (melhorado)
-const ChatIcon = ({ active = false, badge = false }) => (
-  <View>
-    <Svg width="26" height="26" viewBox="0 0 24 24" fill="none">
-      <Path
-        d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 13.8214 2.48697 15.5291 3.33782 17L2.5 21.5L7 20.6622C8.47087 21.513 10.1786 22 12 22Z"
-        stroke={active ? "#FF6B9D" : "#8E8E93"}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <Circle cx="8" cy="12" r="1" fill={active ? "#FF6B9D" : "#8E8E93"} />
-      <Circle cx="12" cy="12" r="1" fill={active ? "#FF6B9D" : "#8E8E93"} />
-      <Circle cx="16" cy="12" r="1" fill={active ? "#FF6B9D" : "#8E8E93"} />
-    </Svg>
-    {badge && <View style={styles.notificationBadge}><Text style={styles.badgeText}>3</Text></View>}
-  </View>
-);
-
-// Ícone Explorar
-const ExploreIcon = ({ active = false }) => (
-  <Svg width="26" height="26" viewBox="0 0 24 24" fill="none">
-    <Circle 
-      cx="12" 
-      cy="12" 
-      r="9" 
-      stroke={active ? "#FF6B9D" : "#8E8E93"} 
-      strokeWidth="2"
-    />
-    <Path
-      d="M14.5 9.5L9.5 14.5M14.5 9.5L16 8L15 15L8 16L9.5 14.5M14.5 9.5L9.5 14.5"
-      stroke={active ? "#FF6B9D" : "#8E8E93"}
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </Svg>
-);
-
-// Ícone Perfil (melhorado - avatar style)
-const ProfileIcon = ({ active = false, userAvatar = null }) => {
-  if (userAvatar) {
-    return (
-      <View style={styles.profileIconContainer}>
-        <Image source={{ uri: userAvatar }} style={styles.profileIconImage} />
-        {active && <View style={styles.profileActiveRing} />}
-      </View>
-    );
-  }
-  
-  return (
-    <Svg width="26" height="26" viewBox="0 0 24 24" fill="none">
-      <Circle 
-        cx="12" 
-        cy="12" 
-        r="10" 
-        stroke={active ? "#FF6B9D" : "#8E8E93"} 
-        strokeWidth="2"
-      />
-      <Circle 
-        cx="12" 
-        cy="10" 
-        r="3" 
-        stroke={active ? "#FF6B9D" : "#8E8E93"} 
-        strokeWidth="2"
-      />
-      <Path
-        d="M6.5 18.5C6.5 16.5 8.68629 15 12 15C15.3137 15 17.5 16.5 17.5 18.5"
-        stroke={active ? "#FF6B9D" : "#8E8E93"}
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-    </Svg>
-  );
-};
-
-// Ícone Plus
-const PlusIcon = () => (
-  <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-    <Path d="M12 5V19M5 12H19" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" />
-  </Svg>
-);
-
-// Mock Stories
-const mockStories = [
-  {
-    id: 'add',
-    user: { name: 'Adicionar', avatar: null, isAdd: true },
-    hasNew: false,
-    isViewed: false,
-  },
+// Dados de Stories Inovadores
+const innovativeStories = [
   {
     id: 1,
-    user: { name: 'Marina', avatar: 'https://i.pravatar.cc/150?img=5' },
-    hasNew: true,
-    isViewed: false,
+    name: 'Seu Story',
+    subtitle: 'Toque aqui',
+    gradient: ['#FF6B9D', '#FF8FAC'],
+    icon: '➕',
+    type: 'create',
   },
   {
     id: 2,
-    user: { name: 'Lucas', avatar: 'https://i.pravatar.cc/150?img=12' },
+    name: 'Marina',
+    subtitle: 'Viagem em alta',
+    gradient: ['#FF6B9D', '#C44569'],
     hasNew: true,
-    isViewed: false,
+    views: 234,
   },
   {
     id: 3,
-    user: { name: 'Beatriz', avatar: 'https://i.pravatar.cc/150?img=9' },
+    name: 'Lucas',
+    subtitle: 'Novo projeto',
+    gradient: ['#FF8A80', '#D32F2F'],
     hasNew: true,
-    isViewed: false,
+    views: 567,
   },
   {
     id: 4,
-    user: { name: 'Pedro', avatar: 'https://i.pravatar.cc/150?img=13' },
+    name: 'Beatriz',
+    subtitle: 'Momentos',
+    gradient: ['#AB47BC', '#7B1FA2'],
     hasNew: false,
-    isViewed: true,
+    views: 89,
   },
   {
     id: 5,
-    user: { name: 'Amanda', avatar: 'https://i.pravatar.cc/150?img=20' },
+    name: 'Pedro',
+    subtitle: 'Em direto',
+    gradient: ['#29B6F6', '#1976D2'],
     hasNew: true,
-    isViewed: false,
+    views: 1234,
   },
 ];
 
-// Mock Momentos
-const mockMoments = [
+// Dados de Posts Inovadores
+const innovativePosts = [
   {
     id: 1,
-    user: {
-      name: 'Carolina Mendes',
-      username: '@carolmends',
-      avatar: 'https://i.pravatar.cc/200?img=5',
-      verified: true,
-    },
-    content: 'Às vezes precisamos apenas de um café e uma conversa sincera para entender que está tudo bem não estar bem',
-    timestamp: '2h atrás',
-    expiresIn: 22,
-    engagement: {
-      reactions: 847,
-      replies: 23,
-    },
-    theme: 'warm',
+    user: { name: 'Ana Silva', avatar: '👩' },
+    title: 'Descoberta Incrível',
+    preview: 'Encontrei um lugar absolutamente incrível na praia que você não vai acreditar...',
+    gradient: ['#FF6B9D', '#C44569'],
+    icon: '🌊',
+    likes: 1234,
+    comments: 89,
+    timestamp: '2h',
+    verified: true,
   },
   {
     id: 2,
-    user: {
-      name: 'Rafael Santos',
-      username: '@rafaelsantos',
-      avatar: 'https://i.pravatar.cc/200?img=12',
-      verified: false,
-    },
-    content: 'Começar de novo não é fracasso. É coragem de escrever um novo capítulo',
-    timestamp: '5h atrás',
-    expiresIn: 19,
-    engagement: {
-      reactions: 1243,
-      replies: 45,
-    },
-    theme: 'cool',
+    user: { name: 'João Pedro', avatar: '👨' },
+    title: 'Novo Projeto',
+    preview: 'Lançamos algo que vamos revolucionar toda a indústria de tecnologia...',
+    gradient: ['#FF8A80', '#D32F2F'],
+    icon: '🚀',
+    likes: 856,
+    comments: 42,
+    timestamp: '5h',
+    verified: false,
   },
   {
     id: 3,
-    user: {
-      name: 'Julia Rocha',
-      username: '@juliarocha',
-      avatar: 'https://i.pravatar.cc/200?img=9',
-      verified: true,
-    },
-    content: 'Aquele momento em que você percebe que pequenas vitórias também merecem ser celebradas',
-    timestamp: '8h atrás',
-    expiresIn: 16,
-    engagement: {
-      reactions: 2103,
-      replies: 67,
-    },
-    theme: 'vibrant',
+    user: { name: 'Maria Clara', avatar: '👧' },
+    title: 'Workshop Exclusivo',
+    preview: 'Aprenda as melhores técnicas de design com os melhores profissionais...',
+    gradient: ['#AB47BC', '#7B1FA2'],
+    icon: '🎨',
+    likes: 456,
+    comments: 23,
+    timestamp: '8h',
+    verified: false,
+  },
+  {
+    id: 4,
+    user: { name: 'Carlos Lima', avatar: '🧑' },
+    title: 'Viagem Épica',
+    preview: 'Atravessei o país inteiro em apenas uma semana, confira o resultado...',
+    gradient: ['#29B6F6', '#1976D2'],
+    icon: '✈️',
+    likes: 2345,
+    comments: 156,
+    timestamp: '12h',
+    verified: true,
   },
 ];
+
+// Card de Story Inovador
+const StoryCard = ({ story, onPress }: any) => {
+  return (
+    <TouchableOpacity style={styles.storyCard} onPress={onPress} activeOpacity={0.8}>
+      <Svg style={styles.storyGradientBg} height="100%" width="100%">
+        <Defs>
+          <SvgGradient id={`storyGrad${story.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
+            <Stop offset="0%" stopColor={story.gradient[0]} stopOpacity="1" />
+            <Stop offset="100%" stopColor={story.gradient[1]} stopOpacity="0.8" />
+          </SvgGradient>
+        </Defs>
+        <Rect width="100%" height="100%" fill={`url(#storyGrad${story.id})`} rx="20" />
+      </Svg>
+
+      <View style={styles.storyContent}>
+        {story.type === 'create' ? (
+          <View style={styles.storyCreateButton}>
+            <Text style={styles.storyIcon}>{story.icon}</Text>
+          </View>
+        ) : (
+          <>
+            {story.hasNew && <View style={styles.storyBadge} />}
+            <Text style={styles.storyBigIcon}>📌</Text>
+            <Text style={styles.storyName} numberOfLines={1}>
+              {story.name}
+            </Text>
+            <Text style={styles.storySubtitle} numberOfLines={1}>
+              {story.subtitle}
+            </Text>
+            {story.views && (
+              <Text style={styles.storyViews}>👁️ {story.views}</Text>
+            )}
+          </>
+        )}
+      </View>
+    </TouchableOpacity>
+  );
+};
+
+// Card de Post Inovador
+const PostCard = ({ post, onLike }: any) => {
+  const [liked, setLiked] = useState(false);
+
+  const handleLike = () => {
+    setLiked(!liked);
+  };
+
+  return (
+    <View style={styles.postContainer}>
+      <Svg style={styles.postGradient} height="100%" width="100%">
+        <Defs>
+          <SvgGradient id={`postGrad${post.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
+            <Stop offset="0%" stopColor={post.gradient[0]} stopOpacity="0.15" />
+            <Stop offset="100%" stopColor={post.gradient[1]} stopOpacity="0.05" />
+          </SvgGradient>
+        </Defs>
+        <Rect width="100%" height="100%" fill={`url(#postGrad${post.id})`} rx="24" />
+      </Svg>
+
+      <TouchableOpacity style={styles.postCard} activeOpacity={0.7}>
+        <View style={styles.postHeader}>
+          <View style={styles.postIconCircle}>
+            <Text style={styles.postMainIcon}>{post.icon}</Text>
+          </View>
+
+          <View style={styles.postHeaderRight}>
+            <View style={styles.postUserRow}>
+              <Text style={styles.postAvatar}>{post.user.avatar}</Text>
+              <View>
+                <View style={styles.postNameRow}>
+                  <Text style={styles.postUserName}>{post.user.name}</Text>
+                  {post.verified && <Text style={styles.verifiedBadge}>✓</Text>}
+                </View>
+                <Text style={styles.postTime}>{post.timestamp}</Text>
+              </View>
+            </View>
+            <TouchableOpacity style={styles.menuButton}>
+              <MaterialCommunityIcons name="dots-vertical" size={20} color="#636E72" />
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View style={styles.postBody}>
+          <Text style={styles.postTitle}>{post.title}</Text>
+          <Text style={styles.postPreview} numberOfLines={2}>
+            {post.preview}
+          </Text>
+        </View>
+
+        <View style={styles.postFooter}>
+          <View style={styles.postStats}>
+            <TouchableOpacity style={styles.statItem} onPress={handleLike}>
+              <Text style={styles.statIcon}>{liked ? '❤️' : '🤍'}</Text>
+              <Text style={styles.statText}>{liked ? post.likes + 1 : post.likes}</Text>
+            </TouchableOpacity>
+            <View style={styles.statItem}>
+              <MaterialCommunityIcons name="chat-outline" size={18} color="#636E72" />
+              <Text style={styles.statText}>{post.comments}</Text>
+            </View>
+            <View style={styles.statItem}>
+              <MaterialCommunityIcons name="share-outline" size={18} color="#636E72" />
+              <Text style={styles.statText}>Compartilhar</Text>
+            </View>
+          </View>
+        </View>
+      </TouchableOpacity>
+    </View>
+  );
+};
 
 export const HomeScreen = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('home');
 
-  const getThemeColors = (theme: string) => {
-    switch (theme) {
-      case 'warm':
-        return { from: '#FFE5E5', to: '#FFF0F0', accent: '#FF6B9D' };
-      case 'cool':
-        return { from: '#E5F3FF', to: '#F0F8FF', accent: '#4A90E2' };
-      case 'vibrant':
-        return { from: '#FFF4E5', to: '#FFFAF0', accent: '#FF9B50' };
-      default:
-        return { from: '#F5F5F5', to: '#FAFAFA', accent: '#666' };
-    }
-  };
-
   return (
     <View style={styles.container}>
       <StatusBar style="dark" />
 
-      {/* Header */}
+      {/* Header Premium */}
       <View style={styles.header}>
         <View>
-          <Text style={styles.logoText}>Lovele</Text>
+          <Text style={styles.greeting}>Olá, {user?.name?.split(' ')[0]}! 👋</Text>
+          <Text style={styles.logo}>Lovele</Text>
         </View>
-        <TouchableOpacity style={styles.composeButton} activeOpacity={0.8}>
-          <PlusIcon />
+        <TouchableOpacity style={styles.notificationButton}>
+          <MaterialCommunityIcons name="bell-outline" size={28} color="#FF6B9D" />
+          <View style={styles.notificationBadge}>
+            <Text style={styles.badgeText}>3</Text>
+          </View>
         </TouchableOpacity>
       </View>
 
-      {/* Stories Section */}
-      <View style={styles.storiesSection}>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.storiesContainer}
-        >
-          {mockStories.map((story) => (
-            <TouchableOpacity
-              key={story.id}
-              style={styles.storyItem}
-              activeOpacity={0.7}
-            >
-              {story.user.isAdd ? (
-                <View style={styles.addStoryContainer}>
-                  <Svg width="68" height="68" viewBox="0 0 68 68">
-                    <Defs>
-                      <SvgGradient id="addStoryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <Stop offset="0%" stopColor="#FF6B9D" stopOpacity="1" />
-                        <Stop offset="100%" stopColor="#C44569" stopOpacity="1" />
-                      </SvgGradient>
-                    </Defs>
-                    <Circle cx="34" cy="34" r="32" fill="url(#addStoryGrad)" />
-                  </Svg>
-                  <View style={styles.addStoryIcon}>
-                    <Svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-                      <Path d="M12 6V18M6 12H18" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" />
-                    </Svg>
-                  </View>
-                </View>
-              ) : (
-                <View style={styles.storyAvatarContainer}>
-                  {story.hasNew && !story.isViewed && (
-                    <Svg width="72" height="72" style={styles.storyRing}>
-                      <Defs>
-                        <SvgGradient id={`storyGrad${story.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
-                          <Stop offset="0%" stopColor="#FF6B9D" stopOpacity="1" />
-                          <Stop offset="50%" stopColor="#C44569" stopOpacity="1" />
-                          <Stop offset="100%" stopColor="#FF6B9D" stopOpacity="1" />
-                        </SvgGradient>
-                      </Defs>
-                      <Circle
-                        cx="36"
-                        cy="36"
-                        r="34"
-                        stroke={`url(#storyGrad${story.id})`}
-                        strokeWidth="3"
-                        fill="none"
-                      />
-                    </Svg>
-                  )}
-                  {story.isViewed && (
-                    <View style={styles.viewedStoryRing} />
-                  )}
-                  <Image
-                    source={{ uri: story.user.avatar }}
-                    style={styles.storyAvatar}
-                  />
-                </View>
-              )}
-              <Text style={styles.storyName} numberOfLines={1}>
-                {story.user.name}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
-
-      {/* Timeline de momentos */}
+      {/* Main Scroll */}
       <ScrollView
-        style={styles.timeline}
+        style={styles.scrollView}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.timelineContent}
+        scrollEventThrottle={16}
       >
-        {/* Header da timeline */}
-        <View style={styles.timelineHeader}>
-          <Text style={styles.timelineTitle}>Momentos</Text>
-          <Text style={styles.timelineSubtitle}>
-            {mockMoments.length} ativos agora
-          </Text>
+        {/* Seção de Stories Inovadora */}
+        <View style={styles.storiesSection}>
+          <Text style={styles.sectionTitle}>Seus Stories</Text>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.storiesScroll}
+            scrollEventThrottle={16}
+          >
+            {innovativeStories.map((story) => (
+              <StoryCard key={story.id} story={story} onPress={() => {}} />
+            ))}
+          </ScrollView>
         </View>
 
-        {/* Cards de momentos */}
-        {mockMoments.map((moment) => {
-          const theme = getThemeColors(moment.theme);
+        {/* Seção de Posts Inovadora */}
+        <View style={styles.postsSection}>
+          <Text style={styles.sectionTitle}>Suas Descobertas</Text>
+          <View style={styles.postsContainer}>
+            {innovativePosts.map((post) => (
+              <PostCard key={post.id} post={post} />
+            ))}
+          </View>
+        </View>
 
-          return (
-            <View key={moment.id} style={styles.momentCard}>
-              {/* Background gradiente sutil */}
-              <View style={[styles.cardBackground, { backgroundColor: theme.from }]} />
-
-              {/* Conteúdo do card */}
-              <View style={styles.cardContent}>
-                {/* Header do momento */}
-                <View style={styles.momentHeader}>
-                  <Image
-                    source={{ uri: moment.user.avatar }}
-                    style={styles.avatar}
-                  />
-                  <View style={styles.userInfo}>
-                    <View style={styles.nameRow}>
-                      <Text style={styles.userName}>{moment.user.name}</Text>
-                      {moment.user.verified && (
-                        <Svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                          <Path
-                            d="M9 12L11 14L15 10M21 12C21 13.1819 20.7672 14.3522 20.3149 15.4442C19.8626 16.5361 19.1997 17.5282 18.364 18.364C17.5282 19.1997 16.5361 19.8626 15.4442 20.3149C14.3522 20.7672 13.1819 21 12 21C10.8181 21 9.64778 20.7672 8.55585 20.3149C7.46392 19.8626 6.47177 19.1997 5.63604 18.364C4.80031 17.5282 4.13738 16.5361 3.68508 15.4442C3.23279 14.3522 3 13.1819 3 12C3 9.61305 3.94821 7.32387 5.63604 5.63604C7.32387 3.94821 9.61305 3 12 3C14.3869 3 16.6761 3.94821 18.364 5.63604C20.0518 7.32387 21 9.61305 21 12Z"
-                            fill="#FF6B9D"
-                            stroke="#FF6B9D"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </Svg>
-                      )}
-                    </View>
-                    <Text style={styles.userHandle}>{moment.user.username}</Text>
-                  </View>
-                  <Text style={styles.timestamp}>{moment.timestamp}</Text>
-                </View>
-
-                {/* Conteúdo do momento */}
-                <Text style={styles.momentText}>{moment.content}</Text>
-
-                {/* Footer do momento */}
-                <View style={styles.momentFooter}>
-                  <View style={styles.engagementRow}>
-                    <TouchableOpacity style={styles.engagementButton} activeOpacity={0.7}>
-                      <Svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                        <Path
-                          d="M20.84 4.61C20.3292 4.099 19.7228 3.69365 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 2.99817C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69365 13.5708 4.099 13.06 4.61L12 5.67L10.94 4.61C9.9083 3.57831 8.50903 2.99871 7.05 2.99871C5.59096 2.99871 4.19169 3.57831 3.16 4.61C2.1283 5.64169 1.54871 7.04097 1.54871 8.5C1.54871 9.95903 2.1283 11.3583 3.16 12.39L4.22 13.45L12 21.23L19.78 13.45L20.84 12.39C21.351 11.8792 21.7563 11.2728 22.0329 10.6054C22.3095 9.93789 22.4518 9.22248 22.4518 8.5C22.4518 7.77752 22.3095 7.06211 22.0329 6.39464C21.7563 5.72718 21.351 5.12075 20.84 4.61V4.61Z"
-                          stroke={theme.accent}
-                          strokeWidth="1.8"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </Svg>
-                      <Text style={[styles.engagementText, { color: theme.accent }]}>
-                        {moment.engagement.reactions.toLocaleString()}
-                      </Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.engagementButton} activeOpacity={0.7}>
-                      <Svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                        <Path
-                          d="M21 15C21 15.5304 20.7893 16.0391 20.4142 16.4142C20.0391 16.7893 19.5304 17 19 17H7L3 21V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V15Z"
-                          stroke="#8E8E93"
-                          strokeWidth="1.8"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </Svg>
-                      <Text style={styles.engagementText}>
-                        {moment.engagement.replies}
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-
-                  <View style={styles.expiryContainer}>
-                    <View style={[styles.expiryDot, { backgroundColor: theme.accent }]} />
-                    <Text style={styles.expiryText}>{moment.expiresIn}h restantes</Text>
-                  </View>
-                </View>
-
-                {/* Barra de progresso minimalista */}
-                <View style={styles.progressContainer}>
-                  <View
-                    style={[
-                      styles.progressBar,
-                      {
-                        width: `${((24 - moment.expiresIn) / 24) * 100}%`,
-                        backgroundColor: theme.accent + '40'
-                      }
-                    ]}
-                  />
-                </View>
-              </View>
-            </View>
-          );
-        })}
-
-        {/* Espaço para o bottom nav */}
-        <View style={{ height: 100 }} />
+        <View style={styles.spacer} />
       </ScrollView>
 
-      {/* Bottom Navigation */}
+      {/* Bottom Navigation - Premium com Icons Nativos */}
       <View style={styles.bottomNav}>
-        <View style={styles.navContent}>
-          <TouchableOpacity
-            style={styles.navButton}
-            onPress={() => setActiveTab('home')}
-            activeOpacity={0.7}
-          >
-            <HomeIcon active={activeTab === 'home'} />
-            {activeTab === 'home' && <View style={styles.activeIndicator} />}
-          </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.navButton, activeTab === 'home' && styles.navButtonActive]}
+          onPress={() => setActiveTab('home')}
+        >
+          <MaterialCommunityIcons
+            name="home"
+            size={26}
+            color={activeTab === 'home' ? '#FF6B9D' : '#B2BEC3'}
+          />
+          <View style={activeTab === 'home' ? styles.navIndicator : null} />
+        </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.navButton}
-            onPress={() => setActiveTab('explore')}
-            activeOpacity={0.7}
-          >
-            <ExploreIcon active={activeTab === 'explore'} />
-            {activeTab === 'explore' && <View style={styles.activeIndicator} />}
-          </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.navButton, activeTab === 'search' && styles.navButtonActive]}
+          onPress={() => setActiveTab('search')}
+        >
+          <MaterialCommunityIcons
+            name="magnify"
+            size={26}
+            color={activeTab === 'search' ? '#FF6B9D' : '#B2BEC3'}
+          />
+          <View style={activeTab === 'search' ? styles.navIndicator : null} />
+        </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.navButton}
-            onPress={() => setActiveTab('chat')}
-            activeOpacity={0.7}
-          >
-            <ChatIcon active={activeTab === 'chat'} badge={true} />
-            {activeTab === 'chat' && <View style={styles.activeIndicator} />}
-          </TouchableOpacity>
+        <TouchableOpacity style={styles.navButtonCenter}>
+          <View style={styles.addButtonGradient}>
+            <MaterialCommunityIcons name="plus" size={32} color="#FFFFFF" />
+          </View>
+        </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.navButton}
-            onPress={() => setActiveTab('profile')}
-            activeOpacity={0.7}
-          >
-            <ProfileIcon 
-              active={activeTab === 'profile'}
-              userAvatar="https://i.pravatar.cc/100?img=8"
-            />
-            {activeTab === 'profile' && <View style={styles.activeIndicator} />}
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity
+          style={[styles.navButton, activeTab === 'messages' && styles.navButtonActive]}
+          onPress={() => setActiveTab('messages')}
+        >
+          <MaterialCommunityIcons
+            name="heart-outline"
+            size={26}
+            color={activeTab === 'messages' ? '#FF6B9D' : '#B2BEC3'}
+          />
+          <View style={activeTab === 'messages' ? styles.navIndicator : null} />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.navButton, activeTab === 'profile' && styles.navButtonActive]}
+          onPress={() => setActiveTab('profile')}
+        >
+          <MaterialCommunityIcons
+            name="account"
+            size={26}
+            color={activeTab === 'profile' ? '#FF6B9D' : '#B2BEC3'}
+          />
+          <View style={activeTab === 'profile' ? styles.navIndicator : null} />
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -461,284 +332,309 @@ export const HomeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#FAFBFC',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: 24,
     paddingTop: 60,
-    paddingBottom: 12,
-    backgroundColor: '#FFFFFF',
-  },
-  logoText: {
-    fontSize: 26,
-    fontWeight: '700',
-    color: '#000000',
-    letterSpacing: -0.5,
-  },
-  composeButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: '#FF6B9D',
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#FF6B9D',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-
-  // Stories
-  storiesSection: {
+    paddingBottom: 20,
     backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
-    borderBottomColor: '#F0F0F0',
-    paddingVertical: 16,
+    borderBottomColor: '#F1F3F5',
   },
-  storiesContainer: {
-    paddingHorizontal: 16,
-    gap: 16,
-  },
-  storyItem: {
-    alignItems: 'center',
-    width: 72,
-  },
-  addStoryContainer: {
-    width: 68,
-    height: 68,
-    position: 'relative',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  addStoryIcon: {
-    position: 'absolute',
-  },
-  storyAvatarContainer: {
-    width: 72,
-    height: 72,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 8,
-    position: 'relative',
-  },
-  storyRing: {
-    position: 'absolute',
-  },
-  viewedStoryRing: {
-    position: 'absolute',
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    borderWidth: 2.5,
-    borderColor: '#E0E0E0',
-  },
-  storyAvatar: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: '#F0F0F0',
-    borderWidth: 3,
-    borderColor: '#FFFFFF',
-  },
-  storyName: {
-    fontSize: 12,
-    color: '#000000',
-    fontWeight: '500',
-    textAlign: 'center',
-  },
-
-  // Timeline
-  timeline: {
-    flex: 1,
-  },
-  timelineContent: {
-    paddingHorizontal: 20,
-  },
-  timelineHeader: {
-    paddingVertical: 20,
-  },
-  timelineTitle: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#000000',
+  greeting: {
+    fontSize: 14,
+    color: '#636E72',
     marginBottom: 4,
   },
-  timelineSubtitle: {
-    fontSize: 14,
-    color: '#8E8E93',
-    fontWeight: '500',
+  logo: {
+    fontSize: 32,
+    fontWeight: '900',
+    color: '#FF6B9D',
+    letterSpacing: -0.5,
   },
-  momentCard: {
+  notificationButton: {
     position: 'relative',
+    padding: 8,
+  },
+  notificationBadge: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    backgroundColor: '#FF3B30',
+    borderRadius: 10,
+    width: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  badgeText: {
+    color: '#FFFFFF',
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  storiesSection: {
+    marginTop: 20,
+    marginBottom: 30,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#2D3436',
     marginBottom: 16,
+    marginHorizontal: 24,
+    letterSpacing: -0.3,
+  },
+  storiesScroll: {
+    paddingHorizontal: 24,
+    gap: 12,
+  },
+  storyCard: {
+    width: 140,
+    height: 180,
     borderRadius: 20,
     overflow: 'hidden',
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#F0F0F0',
+    backgroundColor: '#F8FAFC',
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
   },
-  cardBackground: {
+  storyGradientBg: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
   },
-  cardContent: {
-    padding: 20,
-  },
-  momentHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  avatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: '#F0F0F0',
-  },
-  userInfo: {
+  storyContent: {
     flex: 1,
-    marginLeft: 12,
-  },
-  nameRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  userName: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: '#000000',
-  },
-  userHandle: {
-    fontSize: 13,
-    color: '#8E8E93',
-    marginTop: 2,
-  },
-  timestamp: {
-    fontSize: 13,
-    color: '#8E8E93',
-  },
-  momentText: {
-    fontSize: 16,
-    lineHeight: 24,
-    color: '#1a1a1a',
-    marginBottom: 20,
-  },
-  momentFooter: {
-    flexDirection: 'row',
+    padding: 16,
     justifyContent: 'space-between',
+  },
+  storyBadge: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    width: 12,
+    height: 12,
+    backgroundColor: '#FF6B9D',
+    borderRadius: 6,
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
+  },
+  storyCreateButton: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 12,
   },
-  engagementRow: {
-    flexDirection: 'row',
-    gap: 24,
+  storyIcon: {
+    fontSize: 48,
   },
-  engagementButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
+  storyBigIcon: {
+    fontSize: 32,
+    marginBottom: 8,
   },
-  engagementText: {
+  storyName: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#8E8E93',
+    fontWeight: '700',
+    color: '#FFFFFF',
+    marginBottom: 4,
   },
-  expiryContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
+  storySubtitle: {
+    fontSize: 11,
+    color: '#FFFFFF',
+    opacity: 0.9,
+    marginBottom: 8,
   },
-  expiryDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
+  storyViews: {
+    fontSize: 10,
+    color: '#FFFFFF',
+    opacity: 0.8,
   },
-  expiryText: {
-    fontSize: 12,
-    color: '#8E8E93',
-    fontWeight: '500',
+  postsSection: {
+    marginHorizontal: 24,
   },
-  progressContainer: {
-    height: 2,
-    backgroundColor: '#F0F0F0',
-    borderRadius: 1,
+  postsContainer: {
+    gap: 16,
+  },
+  postContainer: {
+    position: 'relative',
+    marginBottom: 8,
+    borderRadius: 24,
     overflow: 'hidden',
   },
-  progressBar: {
-    height: '100%',
-    borderRadius: 1,
+  postGradient: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
-
-  // Bottom Navigation
+  postCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    padding: 16,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+  },
+  postHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 12,
+  },
+  postIconCircle: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#F8FAFC',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  postMainIcon: {
+    fontSize: 28,
+  },
+  postHeaderRight: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  postUserRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  postAvatar: {
+    fontSize: 24,
+  },
+  postNameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  postUserName: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#2D3436',
+  },
+  verifiedBadge: {
+    fontSize: 12,
+    color: '#FF6B9D',
+  },
+  postTime: {
+    fontSize: 11,
+    color: '#B2BEC3',
+    marginTop: 2,
+  },
+  menuButton: {
+    padding: 4,
+  },
+  postBody: {
+    marginBottom: 12,
+  },
+  postTitle: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#2D3436',
+    marginBottom: 6,
+  },
+  postPreview: {
+    fontSize: 13,
+    color: '#636E72',
+    lineHeight: 19,
+  },
+  postFooter: {
+    borderTopWidth: 1,
+    borderTopColor: '#F1F3F5',
+    paddingTop: 12,
+  },
+  postStats: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  statItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  statIcon: {
+    fontSize: 18,
+  },
+  statText: {
+    fontSize: 12,
+    color: '#636E72',
+    fontWeight: '500',
+  },
+  spacer: {
+    height: 100,
+  },
   bottomNav: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
+    height: 80,
     backgroundColor: '#FFFFFF',
     borderTopWidth: 1,
-    borderTopColor: '#F0F0F0',
-    paddingBottom: 34,
-  },
-  navContent: {
+    borderTopColor: '#F1F3F5',
     flexDirection: 'row',
     justifyContent: 'space-around',
-    paddingTop: 12,
+    alignItems: 'center',
+    paddingBottom: 20,
+    elevation: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
   },
   navButton: {
-    alignItems: 'center',
-    padding: 8,
-  },
-  activeIndicator: {
-    width: 4,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: '#FF6B9D',
-    marginTop: 6,
-  },
-  notificationBadge: {
-    position: 'absolute',
-    top: -2,
-    right: -2,
-    backgroundColor: '#FF3B30',
-    borderRadius: 10,
-    minWidth: 18,
-    height: 18,
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#FFFFFF',
+    paddingVertical: 8,
   },
-  badgeText: {
-    color: '#FFFFFF',
-    fontSize: 11,
-    fontWeight: '700',
+  navButtonActive: {
+    marginTop: 4,
   },
-  profileIconContainer: {
-    position: 'relative',
+  navIndicator: {
+    width: 4,
+    height: 4,
+    backgroundColor: '#FF6B9D',
+    borderRadius: 2,
+    marginTop: 6,
   },
-  profileIconImage: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+  navButtonCenter: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
   },
-  profileActiveRing: {
-    position: 'absolute',
-    top: -2,
-    left: -2,
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    borderWidth: 2,
-    borderColor: '#FF6B9D',
+  addButtonGradient: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 30,
+    backgroundColor: '#FF6B9D',
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 8,
+    shadowColor: '#FF6B9D',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
   },
 });
