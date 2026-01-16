@@ -1,371 +1,458 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Dimensions, Image, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Dimensions, Image } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useAuth } from '../../hooks/useAuth';
-import Svg, { Path, Circle, Defs, LinearGradient as SvgGradient, Stop, Rect } from 'react-native-svg';
+import Svg, { Path, Circle, Defs, LinearGradient as SvgGradient, Stop } from 'react-native-svg';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 // Ícone Home
-const HomeIcon = ({ active = false, size = 24 }) => (
-  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+const HomeIcon = ({ active = false }) => (
+  <Svg width="26" height="26" viewBox="0 0 24 24" fill="none">
     <Path
-      d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z"
-      stroke={active ? "#FF6B9D" : "#B2BEC3"}
-      strokeWidth="2.5"
+      d="M3 12L5 10M5 10L12 3L19 10M5 10V20C5 20.5523 5.44772 21 6 21H9M19 10L21 12M19 10V20C19 20.5523 18.5523 21 18 21H15M9 21C9.55228 21 10 20.5523 10 20V16C10 15.4477 10.4477 15 11 15H13C13.5523 15 14 15.4477 14 16V20C14 20.5523 14.4477 21 15 21M9 21H15"
+      stroke={active ? "#FF6B9D" : "#8E8E93"}
+      strokeWidth="2"
       strokeLinecap="round"
-      strokeLinejoin="round"
-      fill={active ? "#FF6B9D" : "none"}
     />
   </Svg>
 );
 
-// Ícone Mensagens
-const MessageIcon = ({ active = false, size = 24 }) => (
-  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-    <Path
-      d="M21 11.5C21.0034 12.8199 20.6951 14.1219 20.1 15.3C19.3944 16.7118 18.3098 17.8992 16.9674 18.7293C15.6251 19.5594 14.0782 19.9994 12.5 20C11.1801 20.0035 9.87812 19.6951 8.7 19.1L3 21L4.9 15.3C4.30493 14.1219 3.99656 12.8199 4 11.5C4.00061 9.92179 4.44061 8.37488 5.27072 7.03258C6.10083 5.69028 7.28825 4.6056 8.7 3.90003C9.87812 3.30496 11.1801 2.99659 12.5 3.00003H13C15.0843 3.11502 17.053 3.99479 18.5291 5.47089C20.0052 6.94699 20.885 8.91568 21 11V11.5Z"
-      stroke={active ? "#FF6B9D" : "#B2BEC3"}
-      strokeWidth="2.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      fill={active ? "#FF6B9D" : "none"}
-    />
-  </Svg>
+// Ícone Chat (melhorado)
+const ChatIcon = ({ active = false, badge = false }) => (
+  <View>
+    <Svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 13.8214 2.48697 15.5291 3.33782 17L2.5 21.5L7 20.6622C8.47087 21.513 10.1786 22 12 22Z"
+        stroke={active ? "#FF6B9D" : "#8E8E93"}
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <Circle cx="8" cy="12" r="1" fill={active ? "#FF6B9D" : "#8E8E93"} />
+      <Circle cx="12" cy="12" r="1" fill={active ? "#FF6B9D" : "#8E8E93"} />
+      <Circle cx="16" cy="12" r="1" fill={active ? "#FF6B9D" : "#8E8E93"} />
+    </Svg>
+    {badge && <View style={styles.notificationBadge}><Text style={styles.badgeText}>3</Text></View>}
+  </View>
 );
 
 // Ícone Explorar
-const ExploreIcon = ({ active = false, size = 24 }) => (
-  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-    <Path
-      d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
-      stroke={active ? "#FF6B9D" : "#B2BEC3"}
-      strokeWidth="2.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+const ExploreIcon = ({ active = false }) => (
+  <Svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+    <Circle 
+      cx="12" 
+      cy="12" 
+      r="9" 
+      stroke={active ? "#FF6B9D" : "#8E8E93"} 
+      strokeWidth="2"
     />
     <Path
-      d="M16.24 7.76001L14.12 14.12L7.76001 16.24L9.88001 9.88001L16.24 7.76001Z"
-      stroke={active ? "#FF6B9D" : "#B2BEC3"}
-      strokeWidth="2.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      fill={active ? "#FF6B9D" : "none"}
-    />
-  </Svg>
-);
-
-// Ícone Perfil
-const ProfileIcon = ({ active = false, size = 24 }) => (
-  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-    <Path
-      d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21"
-      stroke={active ? "#FF6B9D" : "#B2BEC3"}
-      strokeWidth="2.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <Circle
-      cx="12"
-      cy="7"
-      r="4"
-      stroke={active ? "#FF6B9D" : "#B2BEC3"}
-      strokeWidth="2.5"
-      fill={active ? "#FF6B9D" : "none"}
-    />
-  </Svg>
-);
-
-// Ícone Sparkle/Estrela (Momentos)
-const SparkleIcon = ({ size = 20, color = "#FFFFFF" }) => (
-  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-    <Path
-      d="M12 2L15 9L22 12L15 15L12 22L9 15L2 12L9 9L12 2Z"
-      fill={color}
-      stroke={color}
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </Svg>
-);
-
-// Ícone Fire (Trending)
-const FireIcon = ({ size = 18 }) => (
-  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-    <Path
-      d="M8.5 14.5C8.5 14.5 9 13.5 9 12C9 9.5 7.5 8.5 6.5 6C6 5 6 4 6 4C4.5 6.5 3 10 3 14C3 18.5 6.5 22 12 22C17.5 22 21 18.5 21 14C21 10 19.5 8.5 18 6C18 6 18 7 17 8C15 10 14 11 14 14C14 15.5 14.5 16.5 14.5 16.5C13.5 15.5 13 14.5 13 13C13 11 14 9.5 14 7.5C14 6.5 13.5 5.5 13.5 5.5C12 7 10 9 10 12C10 13.5 10.5 14.5 10.5 14.5C9.5 13.5 8.5 12 8.5 10.5C8.5 9 9 8 9 7C9 6.5 8.5 6 8.5 6C7.5 7.5 6 10 6 13C6 15 7 16.5 8.5 17.5"
-      stroke="#FF6B9D"
+      d="M14.5 9.5L9.5 14.5M14.5 9.5L16 8L15 15L8 16L9.5 14.5M14.5 9.5L9.5 14.5"
+      stroke={active ? "#FF6B9D" : "#8E8E93"}
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      fill="#FF6B9D"
-      opacity="0.3"
     />
   </Svg>
 );
 
-const mockMoments = [
+// Ícone Perfil (melhorado - avatar style)
+const ProfileIcon = ({ active = false, userAvatar = null }) => {
+  if (userAvatar) {
+    return (
+      <View style={styles.profileIconContainer}>
+        <Image source={{ uri: userAvatar }} style={styles.profileIconImage} />
+        {active && <View style={styles.profileActiveRing} />}
+      </View>
+    );
+  }
+  
+  return (
+    <Svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+      <Circle 
+        cx="12" 
+        cy="12" 
+        r="10" 
+        stroke={active ? "#FF6B9D" : "#8E8E93"} 
+        strokeWidth="2"
+      />
+      <Circle 
+        cx="12" 
+        cy="10" 
+        r="3" 
+        stroke={active ? "#FF6B9D" : "#8E8E93"} 
+        strokeWidth="2"
+      />
+      <Path
+        d="M6.5 18.5C6.5 16.5 8.68629 15 12 15C15.3137 15 17.5 16.5 17.5 18.5"
+        stroke={active ? "#FF6B9D" : "#8E8E93"}
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </Svg>
+  );
+};
+
+// Ícone Plus
+const PlusIcon = () => (
+  <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+    <Path d="M12 5V19M5 12H19" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" />
+  </Svg>
+);
+
+// Mock Stories
+const mockStories = [
+  {
+    id: 'add',
+    user: { name: 'Adicionar', avatar: null, isAdd: true },
+    hasNew: false,
+    isViewed: false,
+  },
   {
     id: 1,
-    user: { name: 'Marina Costa', avatar: 'https://i.pravatar.cc/150?img=5' },
-    content: 'Às vezes a vida nos surpreende nos momentos mais simples',
-    gradient: ['#FF6B9D', '#C44569'],
-    timeLeft: '23h',
-    reactions: 156,
-    trending: true,
+    user: { name: 'Marina', avatar: 'https://i.pravatar.cc/150?img=5' },
+    hasNew: true,
+    isViewed: false,
   },
   {
     id: 2,
-    user: { name: 'Lucas Almeida', avatar: 'https://i.pravatar.cc/150?img=12' },
-    content: 'Café, música boa e uma segunda-feira inspiradora',
-    gradient: ['#FEA47F', '#F97F51'],
-    timeLeft: '18h',
-    reactions: 89,
-    trending: false,
+    user: { name: 'Lucas', avatar: 'https://i.pravatar.cc/150?img=12' },
+    hasNew: true,
+    isViewed: false,
   },
   {
     id: 3,
-    user: { name: 'Beatriz Santos', avatar: 'https://i.pravatar.cc/150?img=9' },
-    content: 'Conquistar sonhos, um passo de cada vez',
-    gradient: ['#25CCF7', '#1B9CFC'],
-    timeLeft: '14h',
-    reactions: 234,
-    trending: true,
+    user: { name: 'Beatriz', avatar: 'https://i.pravatar.cc/150?img=9' },
+    hasNew: true,
+    isViewed: false,
+  },
+  {
+    id: 4,
+    user: { name: 'Pedro', avatar: 'https://i.pravatar.cc/150?img=13' },
+    hasNew: false,
+    isViewed: true,
+  },
+  {
+    id: 5,
+    user: { name: 'Amanda', avatar: 'https://i.pravatar.cc/150?img=20' },
+    hasNew: true,
+    isViewed: false,
+  },
+];
+
+// Mock Momentos
+const mockMoments = [
+  {
+    id: 1,
+    user: {
+      name: 'Carolina Mendes',
+      username: '@carolmends',
+      avatar: 'https://i.pravatar.cc/200?img=5',
+      verified: true,
+    },
+    content: 'Às vezes precisamos apenas de um café e uma conversa sincera para entender que está tudo bem não estar bem',
+    timestamp: '2h atrás',
+    expiresIn: 22,
+    engagement: {
+      reactions: 847,
+      replies: 23,
+    },
+    theme: 'warm',
+  },
+  {
+    id: 2,
+    user: {
+      name: 'Rafael Santos',
+      username: '@rafaelsantos',
+      avatar: 'https://i.pravatar.cc/200?img=12',
+      verified: false,
+    },
+    content: 'Começar de novo não é fracasso. É coragem de escrever um novo capítulo',
+    timestamp: '5h atrás',
+    expiresIn: 19,
+    engagement: {
+      reactions: 1243,
+      replies: 45,
+    },
+    theme: 'cool',
+  },
+  {
+    id: 3,
+    user: {
+      name: 'Julia Rocha',
+      username: '@juliarocha',
+      avatar: 'https://i.pravatar.cc/200?img=9',
+      verified: true,
+    },
+    content: 'Aquele momento em que você percebe que pequenas vitórias também merecem ser celebradas',
+    timestamp: '8h atrás',
+    expiresIn: 16,
+    engagement: {
+      reactions: 2103,
+      replies: 67,
+    },
+    theme: 'vibrant',
   },
 ];
 
 export const HomeScreen = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('home');
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [momentText, setMomentText] = useState('');
+
+  const getThemeColors = (theme: string) => {
+    switch (theme) {
+      case 'warm':
+        return { from: '#FFE5E5', to: '#FFF0F0', accent: '#FF6B9D' };
+      case 'cool':
+        return { from: '#E5F3FF', to: '#F0F8FF', accent: '#4A90E2' };
+      case 'vibrant':
+        return { from: '#FFF4E5', to: '#FFFAF0', accent: '#FF9B50' };
+      default:
+        return { from: '#F5F5F5', to: '#FAFAFA', accent: '#666' };
+    }
+  };
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
 
-      {/* Header com Gradiente */}
-      <View style={styles.headerContainer}>
-        <Svg height="200" width={width} style={styles.headerSvg}>
-          <Defs>
-            <SvgGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <Stop offset="0%" stopColor="#FF6B9D" stopOpacity="1" />
-              <Stop offset="100%" stopColor="#C44569" stopOpacity="1" />
-            </SvgGradient>
-          </Defs>
-          <Rect width={width} height="200" fill="url(#headerGrad)" />
-        </Svg>
-
-        <View style={styles.headerContent}>
-          <View>
-            <Text style={styles.headerTitle}>{user?.name?.split(' ')[0]}</Text>
-            <Text style={styles.headerSubtitle}>Seus momentos, suas histórias</Text>
-          </View>
-
-          <TouchableOpacity style={styles.createFloatingButton} onPress={() => setShowCreateModal(true)}>
-            <SparkleIcon size={24} />
-          </TouchableOpacity>
+      {/* Header */}
+      <View style={styles.header}>
+        <View>
+          <Text style={styles.logoText}>Lovele</Text>
         </View>
+        <TouchableOpacity style={styles.composeButton} activeOpacity={0.8}>
+          <PlusIcon />
+        </TouchableOpacity>
       </View>
 
-      {/* Quick Stats */}
-      <View style={styles.statsContainer}>
-        <View style={styles.statCard}>
-          <Text style={styles.statNumber}>24h</Text>
-          <Text style={styles.statLabel}>Duração</Text>
-        </View>
-        <View style={styles.statCard}>
-          <Text style={styles.statNumber}>{mockMoments.length}</Text>
-          <Text style={styles.statLabel}>Ativos</Text>
-        </View>
-        <View style={styles.statCard}>
-          <Text style={styles.statNumber}>
-            {mockMoments.reduce((acc, m) => acc + m.reactions, 0)}
-          </Text>
-          <Text style={styles.statLabel}>Reações</Text>
-        </View>
-      </View>
-
-      {/* Feed */}
-      <ScrollView 
-        style={styles.feed} 
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.feedContent}
-      >
-        <View style={styles.feedHeader}>
-          <Text style={styles.feedTitle}>Em Alta Agora</Text>
-          <FireIcon />
-        </View>
-
-        {mockMoments.map((moment, index) => (
-          <View key={moment.id} style={styles.momentCard}>
-            <Svg height="100%" width="100%" style={styles.momentGradientBg}>
-              <Defs>
-                <SvgGradient id={`grad${moment.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
-                  <Stop offset="0%" stopColor={moment.gradient[0]} stopOpacity="0.1" />
-                  <Stop offset="100%" stopColor={moment.gradient[1]} stopOpacity="0.05" />
-                </SvgGradient>
-              </Defs>
-              <Rect width="100%" height="100%" fill={`url(#grad${moment.id})`} rx="20" />
-            </Svg>
-
-            <View style={styles.momentCardContent}>
-              {moment.trending && (
-                <View style={styles.trendingBadge}>
-                  <FireIcon size={14} />
-                  <Text style={styles.trendingText}>Em alta</Text>
-                </View>
-              )}
-
-              <View style={styles.momentHeader}>
-                <Image source={{ uri: moment.user.avatar }} style={styles.momentAvatar} />
-                <View style={styles.momentUserInfo}>
-                  <Text style={styles.momentUserName}>{moment.user.name}</Text>
-                  <View style={styles.momentTimeContainer}>
-                    <View style={styles.timeDot} />
-                    <Text style={styles.momentTime}>{moment.timeLeft} restantes</Text>
+      {/* Stories Section */}
+      <View style={styles.storiesSection}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.storiesContainer}
+        >
+          {mockStories.map((story) => (
+            <TouchableOpacity
+              key={story.id}
+              style={styles.storyItem}
+              activeOpacity={0.7}
+            >
+              {story.user.isAdd ? (
+                <View style={styles.addStoryContainer}>
+                  <Svg width="68" height="68" viewBox="0 0 68 68">
+                    <Defs>
+                      <SvgGradient id="addStoryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <Stop offset="0%" stopColor="#FF6B9D" stopOpacity="1" />
+                        <Stop offset="100%" stopColor="#C44569" stopOpacity="1" />
+                      </SvgGradient>
+                    </Defs>
+                    <Circle cx="34" cy="34" r="32" fill="url(#addStoryGrad)" />
+                  </Svg>
+                  <View style={styles.addStoryIcon}>
+                    <Svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                      <Path d="M12 6V18M6 12H18" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" />
+                    </Svg>
                   </View>
                 </View>
-              </View>
-
-              <Text style={styles.momentContent}>{moment.content}</Text>
-
-              <View style={styles.momentFooter}>
-                <TouchableOpacity style={styles.reactionContainer}>
-                  <Svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                    <Path
-                      d="M20.84 4.61C20.3292 4.099 19.7228 3.69365 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 2.99817C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69365 13.5708 4.099 13.06 4.61L12 5.67L10.94 4.61C9.9083 3.57831 8.50903 2.99871 7.05 2.99871C5.59096 2.99871 4.19169 3.57831 3.16 4.61C2.1283 5.64169 1.54871 7.04097 1.54871 8.5C1.54871 9.95903 2.1283 11.3583 3.16 12.39L4.22 13.45L12 21.23L19.78 13.45L20.84 12.39C21.351 11.8792 21.7563 11.2728 22.0329 10.6054C22.3095 9.93789 22.4518 9.22248 22.4518 8.5C22.4518 7.77752 22.3095 7.06211 22.0329 6.39464C21.7563 5.72718 21.351 5.12075 20.84 4.61V4.61Z"
-                      fill={moment.gradient[0]}
-                      opacity="0.8"
-                    />
-                  </Svg>
-                  <Text style={[styles.reactionCount, { color: moment.gradient[0] }]}>
-                    {moment.reactions}
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.shareButton}>
-                  <Text style={styles.shareText}>Compartilhar</Text>
-                </TouchableOpacity>
-              </View>
-
-              <View style={styles.progressBarContainer}>
-                <View 
-                  style={[
-                    styles.progressBar, 
-                    { 
-                      width: `${(24 - parseInt(moment.timeLeft)) / 24 * 100}%`,
-                      backgroundColor: moment.gradient[0]
-                    }
-                  ]} 
-                />
-              </View>
-            </View>
-          </View>
-        ))}
-      </ScrollView>
-
-      {/* Modal Criar Momento */}
-      {showCreateModal && (
-        <View style={styles.modalOverlay}>
-          <View style={styles.createModal}>
-            <Svg height="100%" width="100%" style={styles.modalGradient}>
-              <Defs>
-                <SvgGradient id="modalGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <Stop offset="0%" stopColor="#FF6B9D" stopOpacity="0.05" />
-                  <Stop offset="100%" stopColor="#C44569" stopOpacity="0.1" />
-                </SvgGradient>
-              </Defs>
-              <Rect width="100%" height="100%" fill="url(#modalGrad)" rx="24" />
-            </Svg>
-
-            <View style={styles.modalContent}>
-              <View style={styles.modalHeader}>
-                <View style={styles.modalTitleContainer}>
-                  <SparkleIcon size={24} color="#FF6B9D" />
-                  <Text style={styles.modalTitle}>Criar Momento</Text>
+              ) : (
+                <View style={styles.storyAvatarContainer}>
+                  {story.hasNew && !story.isViewed && (
+                    <Svg width="72" height="72" style={styles.storyRing}>
+                      <Defs>
+                        <SvgGradient id={`storyGrad${story.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
+                          <Stop offset="0%" stopColor="#FF6B9D" stopOpacity="1" />
+                          <Stop offset="50%" stopColor="#C44569" stopOpacity="1" />
+                          <Stop offset="100%" stopColor="#FF6B9D" stopOpacity="1" />
+                        </SvgGradient>
+                      </Defs>
+                      <Circle
+                        cx="36"
+                        cy="36"
+                        r="34"
+                        stroke={`url(#storyGrad${story.id})`}
+                        strokeWidth="3"
+                        fill="none"
+                      />
+                    </Svg>
+                  )}
+                  {story.isViewed && (
+                    <View style={styles.viewedStoryRing} />
+                  )}
+                  <Image
+                    source={{ uri: story.user.avatar }}
+                    style={styles.storyAvatar}
+                  />
                 </View>
-                <TouchableOpacity onPress={() => setShowCreateModal(false)}>
-                  <Svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-                    <Path
-                      d="M18 6L6 18M6 6L18 18"
-                      stroke="#636E72"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </Svg>
-                </TouchableOpacity>
-              </View>
-
-              <Text style={styles.modalDescription}>
-                Compartilhe um pensamento que desaparecerá em 24 horas
+              )}
+              <Text style={styles.storyName} numberOfLines={1}>
+                {story.user.name}
               </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
 
-              <View style={styles.inputContainer}>
-                <TextInput
-                  style={styles.momentInput}
-                  placeholder="O que está pensando?"
-                  placeholderTextColor="#B2BEC3"
-                  multiline
-                  numberOfLines={4}
-                  value={momentText}
-                  onChangeText={setMomentText}
-                  maxLength={280}
-                />
-                <Text style={styles.charCount}>{momentText.length}/280</Text>
-              </View>
+      {/* Timeline de momentos */}
+      <ScrollView
+        style={styles.timeline}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.timelineContent}
+      >
+        {/* Header da timeline */}
+        <View style={styles.timelineHeader}>
+          <Text style={styles.timelineTitle}>Momentos</Text>
+          <Text style={styles.timelineSubtitle}>
+            {mockMoments.length} ativos agora
+          </Text>
+        </View>
 
-              <View style={styles.privacyContainer}>
-                <Text style={styles.privacyLabel}>Visibilidade</Text>
-                <View style={styles.privacyButtons}>
-                  <TouchableOpacity style={[styles.privacyButton, styles.privacyButtonActive]}>
-                    <Text style={styles.privacyButtonTextActive}>Público</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.privacyButton}>
-                    <Text style={styles.privacyButtonText}>Amigos</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.privacyButton}>
-                    <Text style={styles.privacyButtonText}>Privado</Text>
-                  </TouchableOpacity>
+        {/* Cards de momentos */}
+        {mockMoments.map((moment) => {
+          const theme = getThemeColors(moment.theme);
+
+          return (
+            <View key={moment.id} style={styles.momentCard}>
+              {/* Background gradiente sutil */}
+              <View style={[styles.cardBackground, { backgroundColor: theme.from }]} />
+
+              {/* Conteúdo do card */}
+              <View style={styles.cardContent}>
+                {/* Header do momento */}
+                <View style={styles.momentHeader}>
+                  <Image
+                    source={{ uri: moment.user.avatar }}
+                    style={styles.avatar}
+                  />
+                  <View style={styles.userInfo}>
+                    <View style={styles.nameRow}>
+                      <Text style={styles.userName}>{moment.user.name}</Text>
+                      {moment.user.verified && (
+                        <Svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                          <Path
+                            d="M9 12L11 14L15 10M21 12C21 13.1819 20.7672 14.3522 20.3149 15.4442C19.8626 16.5361 19.1997 17.5282 18.364 18.364C17.5282 19.1997 16.5361 19.8626 15.4442 20.3149C14.3522 20.7672 13.1819 21 12 21C10.8181 21 9.64778 20.7672 8.55585 20.3149C7.46392 19.8626 6.47177 19.1997 5.63604 18.364C4.80031 17.5282 4.13738 16.5361 3.68508 15.4442C3.23279 14.3522 3 13.1819 3 12C3 9.61305 3.94821 7.32387 5.63604 5.63604C7.32387 3.94821 9.61305 3 12 3C14.3869 3 16.6761 3.94821 18.364 5.63604C20.0518 7.32387 21 9.61305 21 12Z"
+                            fill="#FF6B9D"
+                            stroke="#FF6B9D"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </Svg>
+                      )}
+                    </View>
+                    <Text style={styles.userHandle}>{moment.user.username}</Text>
+                  </View>
+                  <Text style={styles.timestamp}>{moment.timestamp}</Text>
+                </View>
+
+                {/* Conteúdo do momento */}
+                <Text style={styles.momentText}>{moment.content}</Text>
+
+                {/* Footer do momento */}
+                <View style={styles.momentFooter}>
+                  <View style={styles.engagementRow}>
+                    <TouchableOpacity style={styles.engagementButton} activeOpacity={0.7}>
+                      <Svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <Path
+                          d="M20.84 4.61C20.3292 4.099 19.7228 3.69365 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 2.99817C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69365 13.5708 4.099 13.06 4.61L12 5.67L10.94 4.61C9.9083 3.57831 8.50903 2.99871 7.05 2.99871C5.59096 2.99871 4.19169 3.57831 3.16 4.61C2.1283 5.64169 1.54871 7.04097 1.54871 8.5C1.54871 9.95903 2.1283 11.3583 3.16 12.39L4.22 13.45L12 21.23L19.78 13.45L20.84 12.39C21.351 11.8792 21.7563 11.2728 22.0329 10.6054C22.3095 9.93789 22.4518 9.22248 22.4518 8.5C22.4518 7.77752 22.3095 7.06211 22.0329 6.39464C21.7563 5.72718 21.351 5.12075 20.84 4.61V4.61Z"
+                          stroke={theme.accent}
+                          strokeWidth="1.8"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </Svg>
+                      <Text style={[styles.engagementText, { color: theme.accent }]}>
+                        {moment.engagement.reactions.toLocaleString()}
+                      </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={styles.engagementButton} activeOpacity={0.7}>
+                      <Svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <Path
+                          d="M21 15C21 15.5304 20.7893 16.0391 20.4142 16.4142C20.0391 16.7893 19.5304 17 19 17H7L3 21V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V15Z"
+                          stroke="#8E8E93"
+                          strokeWidth="1.8"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </Svg>
+                      <Text style={styles.engagementText}>
+                        {moment.engagement.replies}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  <View style={styles.expiryContainer}>
+                    <View style={[styles.expiryDot, { backgroundColor: theme.accent }]} />
+                    <Text style={styles.expiryText}>{moment.expiresIn}h restantes</Text>
+                  </View>
+                </View>
+
+                {/* Barra de progresso minimalista */}
+                <View style={styles.progressContainer}>
+                  <View
+                    style={[
+                      styles.progressBar,
+                      {
+                        width: `${((24 - moment.expiresIn) / 24) * 100}%`,
+                        backgroundColor: theme.accent + '40'
+                      }
+                    ]}
+                  />
                 </View>
               </View>
-
-              <TouchableOpacity style={styles.publishButton}>
-                <Svg height="100%" width="100%" style={styles.publishButtonGradient}>
-                  <Defs>
-                    <SvgGradient id="btnGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <Stop offset="0%" stopColor="#FF6B9D" stopOpacity="1" />
-                      <Stop offset="100%" stopColor="#C44569" stopOpacity="1" />
-                    </SvgGradient>
-                  </Defs>
-                  <Rect width="100%" height="100%" fill="url(#btnGrad)" rx="16" />
-                </Svg>
-                <Text style={styles.publishButtonText}>Publicar Momento</Text>
-              </TouchableOpacity>
             </View>
-          </View>
-        </View>
-      )}
+          );
+        })}
+
+        {/* Espaço para o bottom nav */}
+        <View style={{ height: 100 }} />
+      </ScrollView>
 
       {/* Bottom Navigation */}
       <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navItem} onPress={() => setActiveTab('home')}>
-          <HomeIcon active={activeTab === 'home'} size={28} />
-        </TouchableOpacity>
+        <View style={styles.navContent}>
+          <TouchableOpacity
+            style={styles.navButton}
+            onPress={() => setActiveTab('home')}
+            activeOpacity={0.7}
+          >
+            <HomeIcon active={activeTab === 'home'} />
+            {activeTab === 'home' && <View style={styles.activeIndicator} />}
+          </TouchableOpacity>
 
-        <TouchableOpacity style={styles.navItem} onPress={() => setActiveTab('explore')}>
-          <ExploreIcon active={activeTab === 'explore'} size={28} />
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.navButton}
+            onPress={() => setActiveTab('explore')}
+            activeOpacity={0.7}
+          >
+            <ExploreIcon active={activeTab === 'explore'} />
+            {activeTab === 'explore' && <View style={styles.activeIndicator} />}
+          </TouchableOpacity>
 
-        <TouchableOpacity style={styles.navItem} onPress={() => setActiveTab('messages')}>
-          <MessageIcon active={activeTab === 'messages'} size={28} />
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.navButton}
+            onPress={() => setActiveTab('chat')}
+            activeOpacity={0.7}
+          >
+            <ChatIcon active={activeTab === 'chat'} badge={true} />
+            {activeTab === 'chat' && <View style={styles.activeIndicator} />}
+          </TouchableOpacity>
 
-        <TouchableOpacity style={styles.navItem} onPress={() => setActiveTab('profile')}>
-          <ProfileIcon active={activeTab === 'profile'} size={28} />
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.navButton}
+            onPress={() => setActiveTab('profile')}
+            activeOpacity={0.7}
+          >
+            <ProfileIcon 
+              active={activeTab === 'profile'}
+              userAvatar="https://i.pravatar.cc/100?img=8"
+            />
+            {activeTab === 'profile' && <View style={styles.activeIndicator} />}
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -374,358 +461,284 @@ export const HomeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FAFBFC',
+    backgroundColor: '#FFFFFF',
   },
-  headerContainer: {
-    position: 'relative',
-    height: 200,
-  },
-  headerSvg: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-  },
-  headerContent: {
-    position: 'absolute',
-    top: 60,
-    left: 0,
-    right: 0,
-    paddingHorizontal: 24,
+  header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 60,
+    paddingBottom: 12,
+    backgroundColor: '#FFFFFF',
   },
-  headerTitle: {
-    fontSize: 32,
-    fontWeight: '800',
-    color: '#FFFFFF',
+  logoText: {
+    fontSize: 26,
+    fontWeight: '700',
+    color: '#000000',
     letterSpacing: -0.5,
   },
-  headerSubtitle: {
-    fontSize: 15,
-    color: '#FFFFFF',
-    opacity: 0.9,
-    marginTop: 4,
-  },
-  createFloatingButton: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+  composeButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#FF6B9D',
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
+    shadowColor: '#FF6B9D',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    paddingHorizontal: 24,
-    marginTop: -40,
-    gap: 12,
-  },
-  statCard: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
     elevation: 4,
   },
-  statNumber: {
-    fontSize: 24,
-    fontWeight: '800',
-    color: '#FF6B9D',
+
+  // Stories
+  storiesSection: {
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F0F0',
+    paddingVertical: 16,
   },
-  statLabel: {
-    fontSize: 12,
-    color: '#636E72',
-    marginTop: 4,
-    fontWeight: '600',
+  storiesContainer: {
+    paddingHorizontal: 16,
+    gap: 16,
   },
-  feed: {
-    flex: 1,
-    marginTop: 20,
-  },
-  feedContent: {
-    paddingHorizontal: 24,
-    paddingBottom: 100,
-  },
-  feedHeader: {
-    flexDirection: 'row',
+  storyItem: {
     alignItems: 'center',
-    gap: 8,
-    marginBottom: 20,
+    width: 72,
   },
-  feedTitle: {
+  addStoryContainer: {
+    width: 68,
+    height: 68,
+    position: 'relative',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  addStoryIcon: {
+    position: 'absolute',
+  },
+  storyAvatarContainer: {
+    width: 72,
+    height: 72,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+    position: 'relative',
+  },
+  storyRing: {
+    position: 'absolute',
+  },
+  viewedStoryRing: {
+    position: 'absolute',
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    borderWidth: 2.5,
+    borderColor: '#E0E0E0',
+  },
+  storyAvatar: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: '#F0F0F0',
+    borderWidth: 3,
+    borderColor: '#FFFFFF',
+  },
+  storyName: {
+    fontSize: 12,
+    color: '#000000',
+    fontWeight: '500',
+    textAlign: 'center',
+  },
+
+  // Timeline
+  timeline: {
+    flex: 1,
+  },
+  timelineContent: {
+    paddingHorizontal: 20,
+  },
+  timelineHeader: {
+    paddingVertical: 20,
+  },
+  timelineTitle: {
     fontSize: 22,
-    fontWeight: '800',
-    color: '#2D3436',
+    fontWeight: '700',
+    color: '#000000',
+    marginBottom: 4,
+  },
+  timelineSubtitle: {
+    fontSize: 14,
+    color: '#8E8E93',
+    fontWeight: '500',
   },
   momentCard: {
     position: 'relative',
-    marginBottom: 20,
+    marginBottom: 16,
     borderRadius: 20,
     overflow: 'hidden',
     backgroundColor: '#FFFFFF',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 16,
-    elevation: 4,
+    borderWidth: 1,
+    borderColor: '#F0F0F0',
   },
-  momentGradientBg: {
+  cardBackground: {
     position: 'absolute',
     top: 0,
     left: 0,
+    right: 0,
+    bottom: 0,
   },
-  momentCardContent: {
+  cardContent: {
     padding: 20,
-  },
-  trendingBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'flex-start',
-    backgroundColor: '#FFF5F8',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-    gap: 6,
-    marginBottom: 16,
-  },
-  trendingText: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#FF6B9D',
   },
   momentHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
     marginBottom: 16,
   },
-  momentAvatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#F8FAFC',
+  avatar: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#F0F0F0',
   },
-  momentUserInfo: {
+  userInfo: {
     flex: 1,
+    marginLeft: 12,
   },
-  momentUserName: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#2D3436',
-  },
-  momentTimeContainer: {
+  nameRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    marginTop: 4,
   },
-  timeDot: {
-    width: 4,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: '#FF6B9D',
+  userName: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#000000',
   },
-  momentTime: {
+  userHandle: {
     fontSize: 13,
-    color: '#636E72',
+    color: '#8E8E93',
+    marginTop: 2,
   },
-  momentContent: {
+  timestamp: {
+    fontSize: 13,
+    color: '#8E8E93',
+  },
+  momentText: {
     fontSize: 16,
-    color: '#2D3436',
     lineHeight: 24,
+    color: '#1a1a1a',
     marginBottom: 20,
   },
   momentFooter: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 12,
   },
-  reactionContainer: {
+  engagementRow: {
+    flexDirection: 'row',
+    gap: 24,
+  },
+  engagementButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 6,
   },
-  reactionCount: {
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  shareButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    backgroundColor: '#F8FAFC',
-    borderRadius: 20,
-  },
-  shareText: {
+  engagementText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#636E72',
+    color: '#8E8E93',
   },
-  progressBarContainer: {
-    height: 4,
-    backgroundColor: '#F1F3F5',
-    borderRadius: 2,
+  expiryContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  expiryDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+  },
+  expiryText: {
+    fontSize: 12,
+    color: '#8E8E93',
+    fontWeight: '500',
+  },
+  progressContainer: {
+    height: 2,
+    backgroundColor: '#F0F0F0',
+    borderRadius: 1,
     overflow: 'hidden',
   },
   progressBar: {
     height: '100%',
-    borderRadius: 2,
+    borderRadius: 1,
   },
-  modalOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-    zIndex: 1000,
-  },
-  createModal: {
-    width: '100%',
-    maxWidth: 500,
-    position: 'relative',
-    borderRadius: 24,
-    overflow: 'hidden',
-    backgroundColor: '#FFFFFF',
-  },
-  modalGradient: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-  },
-  modalContent: {
-    padding: 24,
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  modalTitleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  modalTitle: {
-    fontSize: 24,
-    fontWeight: '800',
-    color: '#2D3436',
-  },
-  modalDescription: {
-    fontSize: 14,
-    color: '#636E72',
-    marginBottom: 24,
-    lineHeight: 20,
-  },
-  inputContainer: {
-    marginBottom: 24,
-  },
-  momentInput: {
-    backgroundColor: '#F8FAFC',
-    borderRadius: 16,
-    padding: 16,
-    fontSize: 16,
-    color: '#2D3436',
-    minHeight: 120,
-    textAlignVertical: 'top',
-    borderWidth: 2,
-    borderColor: '#E2E8F0',
-  },
-  charCount: {
-    fontSize: 12,
-    color: '#B2BEC3',
-    textAlign: 'right',
-    marginTop: 8,
-  },
-  privacyContainer: {
-    marginBottom: 24,
-  },
-  privacyLabel: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#2D3436',
-    marginBottom: 12,
-  },
-  privacyButtons: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  privacyButton: {
-    flex: 1,
-    paddingVertical: 12,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: '#E2E8F0',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-  },
-  privacyButtonActive: {
-    borderColor: '#FF6B9D',
-    backgroundColor: '#FFF5F8',
-  },
-  privacyButtonText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#636E72',
-  },
-  privacyButtonTextActive: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#FF6B9D',
-  },
-  publishButton: {
-    position: 'relative',
-    height: 56,
-    borderRadius: 16,
-    overflow: 'hidden',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  publishButtonGradient: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-  },
-  publishButtonText: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#FFFFFF',
-    zIndex: 1,
-  },
+
+  // Bottom Navigation
   bottomNav: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingVertical: 16,
-    paddingBottom: 28,
     backgroundColor: '#FFFFFF',
     borderTopWidth: 1,
-    borderTopColor: '#F1F3F5',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 12,
-    elevation: 8,
+    borderTopColor: '#F0F0F0',
+    paddingBottom: 34,
   },
-  navItem: {
+  navContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingTop: 12,
+  },
+  navButton: {
+    alignItems: 'center',
     padding: 8,
+  },
+  activeIndicator: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#FF6B9D',
+    marginTop: 6,
+  },
+  notificationBadge: {
+    position: 'absolute',
+    top: -2,
+    right: -2,
+    backgroundColor: '#FF3B30',
+    borderRadius: 10,
+    minWidth: 18,
+    height: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
+  },
+  badgeText: {
+    color: '#FFFFFF',
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  profileIconContainer: {
+    position: 'relative',
+  },
+  profileIconImage: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+  },
+  profileActiveRing: {
+    position: 'absolute',
+    top: -2,
+    left: -2,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: '#FF6B9D',
   },
 });
