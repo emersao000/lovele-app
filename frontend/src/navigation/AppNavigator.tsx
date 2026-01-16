@@ -11,10 +11,18 @@ export const AppNavigator = () => {
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {isAuthenticated ? (
-        <Stack.Screen name="Main" component={MainTabNavigator} />
+      {!isAuthenticated ? (
+        <Stack.Screen 
+          name="AuthStack" 
+          component={AuthNavigator}
+          options={{ animationEnabled: false }}
+        />
       ) : (
-        <Stack.Screen name="Auth" component={AuthNavigator} />
+        <Stack.Screen 
+          name="MainStack" 
+          component={MainTabNavigator}
+          options={{ animationEnabled: false }}
+        />
       )}
     </Stack.Navigator>
   );
