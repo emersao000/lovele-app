@@ -699,10 +699,17 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F8F9FA',
   },
+  mainContent: {
+    flex: 1,
+    backgroundColor: '#F8F9FA',
+  },
   safeAreaTop: {
     backgroundColor: '#FFFFFF',
     borderBottomWidth: 0.5,
     borderBottomColor: '#DBDBDB',
+  },
+  flatList: {
+    flex: 1,
   },
 
   // === HEADER ===
