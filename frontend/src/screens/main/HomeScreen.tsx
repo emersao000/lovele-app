@@ -1092,17 +1092,16 @@ const styles = StyleSheet.create({
   },
 
   // === BOTTOM NAV ===
-  bottomNav: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
+  safeAreaBottom: {
     backgroundColor: '#FFFFFF',
-    paddingTop: 8,
-    paddingBottom: Platform.OS === 'ios' ? 24 : 12,
     borderTopWidth: 0.5,
     borderTopColor: '#DBDBDB',
+  },
+  bottomNav: {
+    flexDirection: 'row',
+    paddingTop: 8,
+    paddingBottom: 8,
+    paddingHorizontal: 0,
   },
   navBtn: {
     flex: 1,
