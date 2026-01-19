@@ -623,6 +623,28 @@ export const HomeScreen = () => {
       </View>
 
 
+      {/* Bottom Navigation */}
+      <BottomNavigation
+        activeTab="home"
+        onTabChange={(tab) => {
+          switch (tab) {
+            case 'home':
+              navigation.navigate('Home');
+              break;
+            case 'search':
+              navigation.navigate('Search');
+              break;
+            case 'messages':
+              navigation.navigate('Chat');
+              break;
+            case 'profile':
+              navigation.navigate('Profile');
+              break;
+          }
+        }}
+        onCreatePress={() => setShowCreateModal(true)}
+      />
+
       {/* Modal para Post Detalhado */}
       <Modal
         visible={showPostDetail}
