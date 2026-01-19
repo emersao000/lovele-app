@@ -50,9 +50,9 @@ export const MainTabNavigator = () => {
         component={CreatePostScreen}
         options={{ tabBarLabel: 'Criar' }}
       />
-      <Tab.Screen 
-        name="Chat" 
-        component={ChatScreen}
+      <Tab.Screen
+        name="Chat"
+        component={ChatsScreen}
         options={{ tabBarLabel: 'Mensagens' }}
       />
       <Tab.Screen 
