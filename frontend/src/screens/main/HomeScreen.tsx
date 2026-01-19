@@ -495,10 +495,19 @@ export const HomeScreen = () => {
   };
 
   const renderItem = ({ item }: any) => {
-    if (item.type === 'momento') {
-      return <MomentoCard item={item} onLike={handleLike} onSave={handleSave} />;
-    }
-    return <RecadoCard item={item} onLike={handleLike} />;
+    return (
+      <TouchableOpacity
+        activeOpacity={0.95}
+        onPress={() => handleOpenPostDetail(item)}
+        style={{ flex: 1 }}
+      >
+        {item.type === 'momento' ? (
+          <MomentoCard item={item} onLike={handleLike} onSave={handleSave} />
+        ) : (
+          <RecadoCard item={item} onLike={handleLike} />
+        )}
+      </TouchableOpacity>
+    );
   };
 
   return (
