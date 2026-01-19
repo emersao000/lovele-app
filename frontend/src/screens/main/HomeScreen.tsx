@@ -11,11 +11,14 @@ import {
   SafeAreaView,
   Animated,
   ScrollView,
+  Modal,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import Svg, { Circle, Path, Defs, LinearGradient as SvgGradient, Stop } from 'react-native-svg';
+import { PostDetail, Post } from '@/components/post';
+import { CreatePostModal, PostType, PrivacyLevel } from '@/components/post/CreatePostModal';
 
 const { width } = Dimensions.get('window');
 
@@ -63,6 +66,7 @@ const FEED_DATA = [
     content: {
       text: 'Às vezes precisamos apenas de um café e uma conversa sincera para entender que está tudo bem não estar bem ☕✨',
       image: 'https://picsum.photos/600/800?random=1',
+      type: 'misto',
     },
     expiresIn: 22,
     timestamp: '2h',
@@ -87,6 +91,7 @@ const FEED_DATA = [
     },
     content: {
       text: 'Obrigado por acreditar em mim quando nem eu mesmo acreditava. Sua amizade é meu porto seguro 🌟',
+      type: 'texto',
     },
     timestamp: '4h',
     likes: 1567,
@@ -105,6 +110,7 @@ const FEED_DATA = [
     content: {
       text: 'Começar de novo não é fracasso. É coragem de escrever um novo capítulo da sua história 📖✨',
       image: 'https://picsum.photos/600/800?random=3',
+      type: 'misto',
     },
     expiresIn: 18,
     timestamp: '6h',
@@ -129,6 +135,7 @@ const FEED_DATA = [
     },
     content: {
       text: 'Você fez meu dia especial só por existir. Gratidão eterna! 💖',
+      type: 'texto',
     },
     timestamp: '8h',
     likes: 892,
@@ -443,6 +450,11 @@ export const HomeScreen = () => {
   const [feedFilter, setFeedFilter] = useState('todos');
   const [feedData, setFeedData] = useState(FEED_DATA);
   const [refreshing, setRefreshing] = useState(false);
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [showPostDetail, setShowPostDetail] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [selectedPostType, setSelectedPostType] = useState<PostType | null>(null);
+  const [selectedPrivacy, setSelectedPrivacy] = useState<PrivacyLevel | null>(null);
 
   const handleLike = (postId: string) => {
     setFeedData((prev) =>
@@ -471,6 +483,26 @@ export const HomeScreen = () => {
     setTimeout(() => setRefreshing(false), 1500);
   };
 
+  const handleOpenPostDetail = (post: any) => {
+    setSelectedPost(post);
+    setShowPostDetail(true);
+  };
+
+  const handleCreatePost = (postType: PostType, privacy: PrivacyLevel) => {
+    setSelectedPostType(postType);
+    setSelectedPrivacy(privacy);
+    setShowCreateModal(false);
+
+    // Navegar para tela de criar post
+    // Por enquanto, apenas mostramos as informações selecionadas
+    console.log(`Criando ${postType} com privacidade: ${privacy}`);
+
+    // Aqui você pode:
+    // - Navegar para uma tela de criação de post
+    // - Abrir um modal de criação de post
+    // - Chamar uma ação de contexto
+  };
+
   const getFilteredData = () => {
     if (feedFilter === 'momentos') {
       return feedData.filter((item) => item.type === 'momento');
@@ -482,154 +514,205 @@ export const HomeScreen = () => {
   };
 
   const renderItem = ({ item }: any) => {
-    if (item.type === 'momento') {
-      return <MomentoCard item={item} onLike={handleLike} onSave={handleSave} />;
-    }
-    return <RecadoCard item={item} onLike={handleLike} />;
+    return (
+      <TouchableOpacity
+        activeOpacity={0.95}
+        onPress={() => handleOpenPostDetail(item)}
+        style={{ flex: 1 }}
+      >
+        {item.type === 'momento' ? (
+          <MomentoCard item={item} onLike={handleLike} onSave={handleSave} />
+        ) : (
+          <RecadoCard item={item} onLike={handleLike} />
+        )}
+      </TouchableOpacity>
+    );
   };
 
   return (
     <View style={styles.container}>
       <StatusBar style="dark" />
 
-      {/* Safe Area para Header */}
-      <SafeAreaView style={styles.safeAreaTop}>
-        {/* Header */}
-        <View style={styles.header}>
-          <View style={styles.logoContainer}>
-            <LoveleLogo size={36} />
-            <Text style={styles.logoText}>Lovele</Text>
+      <View style={styles.mainContent}>
+        {/* Safe Area para Header */}
+        <SafeAreaView style={styles.safeAreaTop} edges={['top']}>
+          {/* Header */}
+          <View style={styles.header}>
+            <View style={styles.logoContainer}>
+              <LoveleLogo size={36} />
+              <Text style={styles.logoText}>Lovele</Text>
+            </View>
+
+            <TouchableOpacity style={styles.iconBtn}>
+              <View style={styles.notifBadge}>
+                <Text style={styles.notifBadgeText}>3</Text>
+              </View>
+              <Ionicons name="notifications-outline" size={26} color="#1A1A1A" />
+            </TouchableOpacity>
           </View>
 
-          <TouchableOpacity style={styles.iconBtn}>
-            <View style={styles.notifBadge}>
-              <Text style={styles.notifBadgeText}>3</Text>
+          {/* Filter Tabs */}
+          <View style={styles.filterContainer}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.filterScroll}
+            >
+              <TouchableOpacity
+                style={[styles.filterTab, feedFilter === 'todos' && styles.filterTabActive]}
+                onPress={() => setFeedFilter('todos')}
+              >
+                <Text style={[styles.filterText, feedFilter === 'todos' && styles.filterTextActive]}>
+                  Todos
+                </Text>
+                {feedFilter === 'todos' && <View style={styles.filterIndicator} />}
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.filterTab, feedFilter === 'momentos' && styles.filterTabActive]}
+                onPress={() => setFeedFilter('momentos')}
+              >
+                <Ionicons
+                  name="time-outline"
+                  size={16}
+                  color={feedFilter === 'momentos' ? '#FF6B9D' : '#8E8E93'}
+                  style={{ marginRight: 6 }}
+                />
+                <Text style={[styles.filterText, feedFilter === 'momentos' && styles.filterTextActive]}>
+                  Momentos
+                </Text>
+                {feedFilter === 'momentos' && <View style={styles.filterIndicator} />}
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.filterTab, feedFilter === 'recados' && styles.filterTabActive]}
+                onPress={() => setFeedFilter('recados')}
+              >
+                <Ionicons
+                  name="chatbubble-ellipses-outline"
+                  size={16}
+                  color={feedFilter === 'recados' ? '#FF6B9D' : '#8E8E93'}
+                  style={{ marginRight: 6 }}
+                />
+                <Text style={[styles.filterText, feedFilter === 'recados' && styles.filterTextActive]}>
+                  Recados
+                </Text>
+                {feedFilter === 'recados' && <View style={styles.filterIndicator} />}
+              </TouchableOpacity>
+            </ScrollView>
+          </View>
+        </SafeAreaView>
+
+        {/* Feed */}
+        <FlatList
+          data={getFilteredData()}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+          showsVerticalScrollIndicator={false}
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          contentContainerStyle={styles.feedList}
+          style={styles.flatList}
+          ListEmptyComponent={
+            <View style={styles.emptyState}>
+              <Ionicons
+                name={feedFilter === 'momentos' ? 'time-outline' : 'chatbubble-ellipses-outline'}
+                size={64}
+                color="#DBDBDB"
+              />
+              <Text style={styles.emptyText}>
+                {feedFilter === 'momentos' ? 'Nenhum momento por aqui ainda' : 'Nenhum recado por aqui ainda'}
+              </Text>
             </View>
-            <Ionicons name="notifications-outline" size={26} color="#1A1A1A" />
+          }
+        />
+      </View>
+
+      {/* Bottom Navigation */}
+      <SafeAreaView style={styles.safeAreaBottom} edges={['bottom']}>
+        <View style={styles.bottomNav}>
+          <TouchableOpacity style={styles.navBtn} onPress={() => setActiveTab('home')}>
+            <Ionicons
+              name={activeTab === 'home' ? 'home' : 'home-outline'}
+              size={28}
+              color={activeTab === 'home' ? '#1A1A1A' : '#8E8E93'}
+            />
           </TouchableOpacity>
-        </View>
 
-        {/* Filter Tabs */}
-        <View style={styles.filterContainer}>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.filterScroll}
-          >
-            <TouchableOpacity
-              style={[styles.filterTab, feedFilter === 'todos' && styles.filterTabActive]}
-              onPress={() => setFeedFilter('todos')}
-            >
-              <Text style={[styles.filterText, feedFilter === 'todos' && styles.filterTextActive]}>
-                Todos
-              </Text>
-              {feedFilter === 'todos' && <View style={styles.filterIndicator} />}
-            </TouchableOpacity>
+          <TouchableOpacity style={styles.navBtn} onPress={() => setActiveTab('search')}>
+            <Ionicons
+              name={activeTab === 'search' ? 'search' : 'search-outline'}
+              size={28}
+              color={activeTab === 'search' ? '#1A1A1A' : '#8E8E93'}
+            />
+          </TouchableOpacity>
 
-            <TouchableOpacity
-              style={[styles.filterTab, feedFilter === 'momentos' && styles.filterTabActive]}
-              onPress={() => setFeedFilter('momentos')}
-            >
+          <TouchableOpacity style={styles.navBtn} onPress={() => setShowCreateModal(true)}>
+            <View style={styles.createBtn}>
+              <Ionicons name="add" size={28} color="#1A1A1A" />
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.navBtn} onPress={() => setActiveTab('messages')}>
+            <View>
               <Ionicons
-                name="time-outline"
-                size={16}
-                color={feedFilter === 'momentos' ? '#FF6B9D' : '#8E8E93'}
-                style={{ marginRight: 6 }}
+                name={activeTab === 'messages' ? 'chatbubbles' : 'chatbubbles-outline'}
+                size={28}
+                color={activeTab === 'messages' ? '#1A1A1A' : '#8E8E93'}
               />
-              <Text style={[styles.filterText, feedFilter === 'momentos' && styles.filterTextActive]}>
-                Momentos
-              </Text>
-              {feedFilter === 'momentos' && <View style={styles.filterIndicator} />}
-            </TouchableOpacity>
+              <View style={styles.messageBadge}>
+                <Text style={styles.messageBadgeText}>5</Text>
+              </View>
+            </View>
+          </TouchableOpacity>
 
-            <TouchableOpacity
-              style={[styles.filterTab, feedFilter === 'recados' && styles.filterTabActive]}
-              onPress={() => setFeedFilter('recados')}
-            >
-              <Ionicons
-                name="chatbubble-ellipses-outline"
-                size={16}
-                color={feedFilter === 'recados' ? '#FF6B9D' : '#8E8E93'}
-                style={{ marginRight: 6 }}
+          <TouchableOpacity style={styles.navBtn} onPress={() => setActiveTab('profile')}>
+            <View style={[styles.profileNav, activeTab === 'profile' && styles.profileNavActive]}>
+              <Image
+                source={{ uri: 'https://i.pravatar.cc/100?img=8' }}
+                style={styles.profileNavImg}
               />
-              <Text style={[styles.filterText, feedFilter === 'recados' && styles.filterTextActive]}>
-                Recados
-              </Text>
-              {feedFilter === 'recados' && <View style={styles.filterIndicator} />}
-            </TouchableOpacity>
-          </ScrollView>
+            </View>
+          </TouchableOpacity>
         </View>
       </SafeAreaView>
 
-      {/* Feed */}
-      <FlatList
-        data={getFilteredData()}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        showsVerticalScrollIndicator={false}
-        refreshing={refreshing}
-        onRefresh={onRefresh}
-        contentContainerStyle={styles.feedList}
-        ListEmptyComponent={
-          <View style={styles.emptyState}>
-            <Ionicons
-              name={feedFilter === 'momentos' ? 'time-outline' : 'chatbubble-ellipses-outline'}
-              size={64}
-              color="#DBDBDB"
-            />
-            <Text style={styles.emptyText}>
-              {feedFilter === 'momentos' ? 'Nenhum momento por aqui ainda' : 'Nenhum recado por aqui ainda'}
-            </Text>
+      {/* Modal para Post Detalhado */}
+      <Modal
+        visible={showPostDetail}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setShowPostDetail(false)}
+      >
+        <SafeAreaView style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <TouchableOpacity
+              onPress={() => setShowPostDetail(false)}
+              style={styles.closeBtn}
+            >
+              <Ionicons name="close" size={24} color="#1A1A1A" />
+            </TouchableOpacity>
           </View>
-        }
+          {selectedPost && (
+            <PostDetail
+              post={selectedPost}
+              onLike={handleLike}
+              onComment={(id) => console.log('Comentar em:', id)}
+              onShare={(id) => console.log('Compartilhar:', id)}
+              onSave={handleSave}
+              variant="fullscreen"
+              showFullContent={true}
+            />
+          )}
+        </SafeAreaView>
+      </Modal>
+
+      {/* Modal para Criar Post */}
+      <CreatePostModal
+        visible={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onSelectType={handleCreatePost}
       />
-
-      {/* Bottom Navigation */}
-      <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navBtn} onPress={() => setActiveTab('home')}>
-          <Ionicons
-            name={activeTab === 'home' ? 'home' : 'home-outline'}
-            size={28}
-            color={activeTab === 'home' ? '#1A1A1A' : '#8E8E93'}
-          />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.navBtn} onPress={() => setActiveTab('search')}>
-          <Ionicons
-            name={activeTab === 'search' ? 'search' : 'search-outline'}
-            size={28}
-            color={activeTab === 'search' ? '#1A1A1A' : '#8E8E93'}
-          />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.navBtn} onPress={() => setActiveTab('create')}>
-          <View style={styles.createBtn}>
-            <Ionicons name="add" size={28} color="#1A1A1A" />
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.navBtn} onPress={() => setActiveTab('messages')}>
-          <View>
-            <Ionicons
-              name={activeTab === 'messages' ? 'chatbubbles' : 'chatbubbles-outline'}
-              size={28}
-              color={activeTab === 'messages' ? '#1A1A1A' : '#8E8E93'}
-            />
-            <View style={styles.messageBadge}>
-              <Text style={styles.messageBadgeText}>5</Text>
-            </View>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.navBtn} onPress={() => setActiveTab('profile')}>
-          <View style={[styles.profileNav, activeTab === 'profile' && styles.profileNavActive]}>
-            <Image
-              source={{ uri: 'https://i.pravatar.cc/100?img=8' }}
-              style={styles.profileNavImg}
-            />
-          </View>
-        </TouchableOpacity>
-      </View>
     </View>
   );
 };
@@ -642,10 +725,17 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F8F9FA',
   },
+  mainContent: {
+    flex: 1,
+    backgroundColor: '#F8F9FA',
+  },
   safeAreaTop: {
     backgroundColor: '#FFFFFF',
     borderBottomWidth: 0.5,
     borderBottomColor: '#DBDBDB',
+  },
+  flatList: {
+    flex: 1,
   },
 
   // === HEADER ===
@@ -730,7 +820,6 @@ const styles = StyleSheet.create({
   // === FEED ===
   feedList: {
     paddingVertical: 16,
-    paddingBottom: 100,
   },
   emptyState: {
     alignItems: 'center',
@@ -1038,17 +1127,16 @@ const styles = StyleSheet.create({
   },
 
   // === BOTTOM NAV ===
-  bottomNav: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
+  safeAreaBottom: {
     backgroundColor: '#FFFFFF',
-    paddingTop: 8,
-    paddingBottom: Platform.OS === 'ios' ? 24 : 12,
     borderTopWidth: 0.5,
     borderTopColor: '#DBDBDB',
+  },
+  bottomNav: {
+    flexDirection: 'row',
+    paddingTop: 8,
+    paddingBottom: Platform.OS === 'ios' ? 32 : 20,
+    paddingHorizontal: 0,
   },
   navBtn: {
     flex: 1,
@@ -1096,5 +1184,24 @@ const styles = StyleSheet.create({
   profileNavImg: {
     width: '100%',
     height: '100%',
+  },
+
+  // === MODAL ===
+  modalContainer: {
+    flex: 1,
+    backgroundColor: '#F8F9FA',
+  },
+  modalHeader: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 0.5,
+    borderBottomColor: '#DBDBDB',
+  },
+  closeBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
