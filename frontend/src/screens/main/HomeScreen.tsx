@@ -647,7 +647,7 @@ export const HomeScreen = () => {
             />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.navBtn} onPress={() => setActiveTab('create')}>
+          <TouchableOpacity style={styles.navBtn} onPress={() => setShowCreateModal(true)}>
             <View style={styles.createBtn}>
               <Ionicons name="add" size={28} color="#1A1A1A" />
             </View>
