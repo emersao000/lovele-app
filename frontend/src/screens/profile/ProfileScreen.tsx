@@ -45,6 +45,11 @@ export const ProfileScreen = () => {
           <Text style={styles.logoutButtonText}>Sair</Text>
         </TouchableOpacity>
       </ScrollView>
+
+      <BottomNavigation
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      />
     </View>
   );
 };
