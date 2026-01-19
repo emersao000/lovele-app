@@ -784,7 +784,6 @@ const styles = StyleSheet.create({
   // === FEED ===
   feedList: {
     paddingVertical: 16,
-    paddingBottom: 100,
   },
   emptyState: {
     alignItems: 'center',
