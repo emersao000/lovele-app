@@ -630,53 +630,11 @@ export const HomeScreen = () => {
       </View>
 
       {/* Bottom Navigation */}
-      <SafeAreaView style={styles.safeAreaBottom} edges={['bottom']}>
-        <View style={styles.bottomNav}>
-          <TouchableOpacity style={styles.navBtn} onPress={() => setActiveTab('home')}>
-            <Ionicons
-              name={activeTab === 'home' ? 'home' : 'home-outline'}
-              size={28}
-              color={activeTab === 'home' ? '#1A1A1A' : '#8E8E93'}
-            />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.navBtn} onPress={() => setActiveTab('search')}>
-            <Ionicons
-              name={activeTab === 'search' ? 'search' : 'search-outline'}
-              size={28}
-              color={activeTab === 'search' ? '#1A1A1A' : '#8E8E93'}
-            />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.navBtn} onPress={() => setShowCreateModal(true)}>
-            <View style={styles.createBtn}>
-              <Ionicons name="add" size={28} color="#1A1A1A" />
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.navBtn} onPress={() => setActiveTab('messages')}>
-            <View>
-              <Ionicons
-                name={activeTab === 'messages' ? 'chatbubbles' : 'chatbubbles-outline'}
-                size={28}
-                color={activeTab === 'messages' ? '#1A1A1A' : '#8E8E93'}
-              />
-              <View style={styles.messageBadge}>
-                <Text style={styles.messageBadgeText}>5</Text>
-              </View>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.navBtn} onPress={() => setActiveTab('profile')}>
-            <View style={[styles.profileNav, activeTab === 'profile' && styles.profileNavActive]}>
-              <Image
-                source={{ uri: 'https://i.pravatar.cc/100?img=8' }}
-                style={styles.profileNavImg}
-              />
-            </View>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
+      <BottomNavigation
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        onCreatePress={() => setShowCreateModal(true)}
+      />
 
       {/* Modal para Post Detalhado */}
       <Modal
