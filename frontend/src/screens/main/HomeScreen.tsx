@@ -706,6 +706,13 @@ export const HomeScreen = () => {
           )}
         </SafeAreaView>
       </Modal>
+
+      {/* Modal para Criar Post */}
+      <CreatePostModal
+        visible={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onSelectType={handleCreatePost}
+      />
     </View>
   );
 };
