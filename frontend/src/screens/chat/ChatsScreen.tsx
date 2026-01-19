@@ -6,9 +6,12 @@ import {
   ScrollView,
   SafeAreaView,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
+import { BottomNavigation } from '@/components/common/BottomNavigation';
 
 export const ChatsScreen = () => {
+  const navigation = useNavigation<any>();
 
   return (
     <View style={styles.container}>
