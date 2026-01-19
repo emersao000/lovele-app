@@ -20,12 +20,11 @@ const { height } = Dimensions.get('window');
 // ==========================================
 
 export type PostType = 'momento' | 'recado';
-export type PrivacyLevel = 'publico' | 'amigos' | 'privado';
 
 export interface CreatePostModalProps {
   visible: boolean;
   onClose: () => void;
-  onSelectType: (type: PostType, privacy: PrivacyLevel) => void;
+  onSelectType: (type: PostType) => void;
 }
 
 interface PostTypeOption {
