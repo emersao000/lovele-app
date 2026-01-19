@@ -1085,65 +1085,6 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
 
-  // === BOTTOM NAV ===
-  safeAreaBottom: {
-    backgroundColor: '#FFFFFF',
-    borderTopWidth: 0.5,
-    borderTopColor: '#DBDBDB',
-  },
-  bottomNav: {
-    flexDirection: 'row',
-    paddingTop: 8,
-    paddingBottom: Platform.OS === 'ios' ? 32 : 20,
-    paddingHorizontal: 0,
-  },
-  navBtn: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  createBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 8,
-    borderWidth: 2,
-    borderColor: '#1A1A1A',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  messageBadge: {
-    position: 'absolute',
-    top: -5,
-    right: -5,
-    backgroundColor: '#FF3B30',
-    borderRadius: 10,
-    minWidth: 18,
-    height: 18,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#FFFFFF',
-  },
-  messageBadgeText: {
-    color: '#FFFFFF',
-    fontSize: 11,
-    fontWeight: '700',
-  },
-  profileNav: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: '#DBDBDB',
-  },
-  profileNavActive: {
-    borderWidth: 2,
-    borderColor: '#1A1A1A',
-  },
-  profileNavImg: {
-    width: '100%',
-    height: '100%',
-  },
 
   // === MODAL ===
   modalContainer: {
