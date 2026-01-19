@@ -19,7 +19,6 @@ import { Ionicons, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import Svg, { Circle, Path, Defs, LinearGradient as SvgGradient, Stop } from 'react-native-svg';
 import { PostDetail, Post } from '@/components/post';
 import { CreatePostModal, PostType } from '@/components/post/CreatePostModal';
-import { BottomNavigation } from '@/components/common/BottomNavigation';
 
 const { width } = Dimensions.get('window');
 
