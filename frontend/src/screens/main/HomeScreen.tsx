@@ -65,6 +65,7 @@ const FEED_DATA = [
     content: {
       text: 'Às vezes precisamos apenas de um café e uma conversa sincera para entender que está tudo bem não estar bem ☕✨',
       image: 'https://picsum.photos/600/800?random=1',
+      type: 'misto',
     },
     expiresIn: 22,
     timestamp: '2h',
@@ -89,6 +90,7 @@ const FEED_DATA = [
     },
     content: {
       text: 'Obrigado por acreditar em mim quando nem eu mesmo acreditava. Sua amizade é meu porto seguro 🌟',
+      type: 'texto',
     },
     timestamp: '4h',
     likes: 1567,
@@ -107,6 +109,7 @@ const FEED_DATA = [
     content: {
       text: 'Começar de novo não é fracasso. É coragem de escrever um novo capítulo da sua história 📖✨',
       image: 'https://picsum.photos/600/800?random=3',
+      type: 'misto',
     },
     expiresIn: 18,
     timestamp: '6h',
@@ -131,6 +134,7 @@ const FEED_DATA = [
     },
     content: {
       text: 'Você fez meu dia especial só por existir. Gratidão eterna! 💖',
+      type: 'texto',
     },
     timestamp: '8h',
     likes: 892,
