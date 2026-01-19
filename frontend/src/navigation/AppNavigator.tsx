@@ -4,7 +4,8 @@ import { useAuth } from '../hooks/useAuth';
 import { WelcomeScreen } from '../screens/auth/WelcomeScreen';
 import { LoginScreen } from '../screens/auth/LoginScreen';
 import { RegisterScreen } from '../screens/auth/RegisterScreen';
-import { HomeScreen } from '../screens/main/HomeScreen';
+import { MainTabNavigator } from './MainTabNavigator';
+import { SettingsScreen } from '../screens/settings/SettingsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -33,8 +34,15 @@ export const AppNavigator = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen
-        name="Home"
-        component={HomeScreen}
+        name="MainTabs"
+        component={MainTabNavigator}
+      />
+      <Stack.Screen
+        name="Settings"
+        component={SettingsScreen}
+        options={{
+          animationEnabled: true,
+        }}
       />
     </Stack.Navigator>
   );
