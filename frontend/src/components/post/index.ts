@@ -11,6 +11,7 @@ export type {
 
 // Componentes auxiliares (quando disponíveis)
 export { CreatePostModal } from './CreatePostModal';
+export type { PostType, PrivacyLevel, CreatePostModalProps } from './CreatePostModal';
 export { PostCard } from './PostCard';
 export { PostContent } from './PostContent';
 export { PostHeader } from './PostHeader';
