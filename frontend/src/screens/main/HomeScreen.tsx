@@ -620,12 +620,6 @@ export const HomeScreen = () => {
         />
       </View>
 
-      {/* Bottom Navigation */}
-      <BottomNavigation
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        onCreatePress={() => setShowCreateModal(true)}
-      />
 
       {/* Modal para Post Detalhado */}
       <Modal
