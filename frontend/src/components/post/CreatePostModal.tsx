@@ -35,13 +35,6 @@ interface PostTypeOption {
   colors: [string, string];
 }
 
-interface PrivacyOption {
-  id: PrivacyLevel;
-  label: string;
-  description: string;
-  icon: string;
-}
-
 // ==========================================
 // 📦 DADOS
 // ==========================================
@@ -60,27 +53,6 @@ const POST_TYPES: PostTypeOption[] = [
     description: 'Deixe uma mensagem para alguém especial',
     icon: 'chatbubble-ellipses-outline',
     colors: ['#FF9D5C', '#F97316'],
-  },
-];
-
-const PRIVACY_OPTIONS: PrivacyOption[] = [
-  {
-    id: 'publico',
-    label: 'Público',
-    description: 'Todos podem ver',
-    icon: 'globe-outline',
-  },
-  {
-    id: 'amigos',
-    label: 'Amigos',
-    description: 'Apenas seus amigos',
-    icon: 'people-outline',
-  },
-  {
-    id: 'privado',
-    label: 'Privado',
-    description: 'Apenas você',
-    icon: 'lock-closed-outline',
   },
 ];
 
