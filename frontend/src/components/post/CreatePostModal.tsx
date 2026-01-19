@@ -65,34 +65,15 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
   onClose,
   onSelectType,
 }) => {
-  const [selectedType, setSelectedType] = useState<PostType>('momento');
-  const [selectedPrivacy, setSelectedPrivacy] = useState<PrivacyLevel>('publico');
-  const [step, setStep] = useState<'type' | 'privacy'>('type');
+  const { defaultPrivacy } = usePostPrivacy();
 
   const handleTypeSelect = (type: PostType) => {
-    setSelectedType(type);
-    setStep('privacy');
-  };
-
-  const handlePrivacySelect = (privacy: PrivacyLevel) => {
-    setSelectedPrivacy(privacy);
-    onSelectType(selectedType, privacy);
-    resetModal();
-  };
-
-  const handleClose = () => {
-    resetModal();
+    onSelectType(type);
     onClose();
   };
 
-  const resetModal = () => {
-    setStep('type');
-    setSelectedType('momento');
-    setSelectedPrivacy('publico');
-  };
-
-  const handleBack = () => {
-    setStep('type');
+  const handleClose = () => {
+    onClose();
   };
 
   // ==========================================
