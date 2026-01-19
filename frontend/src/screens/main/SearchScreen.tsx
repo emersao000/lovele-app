@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, ScrollView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { BottomNavigation } from '@/components/common/BottomNavigation';
 
 export const SearchScreen = () => {
   const [searchText, setSearchText] = useState('');
+  const [activeTab, setActiveTab] = useState('search');
 
   return (
     <View style={styles.container}>
